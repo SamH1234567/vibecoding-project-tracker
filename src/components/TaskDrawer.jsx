@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { STAGES } from '../constants';
+import ContextField from './ContextField';
 import Drawer, { Field, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
 import { TASK_TYPES } from './taskTypes';
 
@@ -11,7 +12,15 @@ export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onClos
   const canSave = draft.title.trim() !== '';
 
   function handleSubmit() {
-    if (canSave) onSave({ ...draft, title: draft.title.trim() });
+    if (!canSave) return;
+    // contextUpdatedAt is set automatically whenever the AI context changes.
+    const contextChanged =
+      draft.context !== task.context || draft.contextTool !== task.contextTool || draft.outcome !== task.outcome;
+    onSave({
+      ...draft,
+      title: draft.title.trim(),
+      contextUpdatedAt: contextChanged ? new Date().toISOString() : draft.contextUpdatedAt,
+    });
   }
 
   function handleDelete() {
@@ -113,7 +122,7 @@ export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onClos
         </Field>
       </div>
 
-      {/* TODO M9 task-context: Context (Markdown), AI tool, outcome, "last updated" hint. */}
+      <ContextField draft={draft} setDraft={setDraft} />
     </Drawer>
   );
 }

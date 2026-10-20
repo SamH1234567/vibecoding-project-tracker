@@ -50,3 +50,15 @@ export function dueState(task) {
   if (days <= 2) return 'warning';
   return 'safe';
 }
+
+// "just now", "5 min ago", "2 h ago", "3 days ago", or a date after a week.
+export function timeAgo(isoTimestamp) {
+  const minutes = Math.floor((Date.now() - new Date(isoTimestamp)) / 60_000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return days === 1 ? '1 day ago' : `${days} days ago`;
+  return `on ${formatShortDate(toISODate(new Date(isoTimestamp)))}`;
+}

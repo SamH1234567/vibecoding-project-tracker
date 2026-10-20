@@ -44,3 +44,7 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | Manage team: add / rename / remove members, email, GitHub | M7 `task-owner` | `src/components/TeamDrawer.jsx`, `src/lib/store.js` | |
 | Renaming a member updates their tasks; can't remove a member who owns tasks | M7 `task-owner` | `src/lib/store.js`, `TeamDrawer.jsx` | |
 | Due-date chip on cards: green >2 days, amber 0–2 days, red overdue, grey when Done; text label + icon, not colour alone | M8 `due-tint` | `src/components/DueChip.jsx`, `src/lib/dates.js` | |
+| AI context section in the task drawer: Markdown context, AI tool, outcome | M9 `task-context` | `src/components/ContextField.jsx` | |
+| "Last updated … ago" hint; contextUpdatedAt set automatically on save | M9 `task-context` | `ContextField.jsx`, `TaskDrawer.jsx`, `src/lib/dates.js` | |
+| New tasks pre-filled with Background / Constraints / Tried so far / Pick up template | M9 `task-context` | `src/seed.js`, `src/lib/store.js` | |
+| Write / Preview toggle with rendered Markdown | M9 `task-context` | `ContextField.jsx` (react-markdown) | |
