@@ -1,8 +1,9 @@
+import { ChevronDown, Copy } from 'lucide-react';
 import Avatar from './Avatar';
 import DueChip from './DueChip';
 import { TASK_TYPES } from './taskTypes';
 
-export default function TaskCard({ task, team, onOpen, onHandOff }) {
+export default function TaskCard({ task, team, onOpen, onHandOff, onCopy }) {
   const type = TASK_TYPES[task.type];
   const others = team.filter((m) => m.name !== task.assignee);
 
@@ -32,26 +33,43 @@ export default function TaskCard({ task, team, onOpen, onHandOff }) {
 
       <div className="mt-3 flex items-center gap-2">
         <Avatar name={task.assignee} />
-        <span className="min-w-0 flex-1 truncate text-xs text-text-muted" title={task.assignee}>
-          {task.assignee}
-        </span>
-        {others.length > 0 && (
-          <select
-            value=""
-            onChange={(e) => onHandOff(task, e.target.value)}
-            aria-label={`Hand off "${task.title}" to…`}
-            className="relative z-10 shrink-0 cursor-pointer rounded-full border border-slate-200 bg-surface-card py-0.5 pl-2 pr-6 text-xs text-text-muted hover:border-slate-300 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-          >
-            <option value="" disabled>
-              Hand off to…
-            </option>
-            {others.map((m) => (
-              <option key={m.id} value={m.name}>
-                {m.name}
-              </option>
-            ))}
-          </select>
+        {/* The owner's name is the "Hand off to…" dropdown (M7). */}
+        {others.length > 0 ? (
+          <div className="relative z-10 min-w-0">
+            <select
+              value={task.assignee}
+              onChange={(e) => onHandOff(task, e.target.value)}
+              aria-label={`Owner of "${task.title}". Hand off to…`}
+              title="Hand off to…"
+              className="w-full cursor-pointer appearance-none truncate rounded-full bg-transparent py-0.5 pl-1 pr-5 text-xs text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            >
+              <option value={task.assignee}>{task.assignee}</option>
+              <optgroup label="Hand off to…">
+                {others.map((m) => (
+                  <option key={m.id} value={m.name}>
+                    {m.name}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+            <ChevronDown
+              size={12}
+              className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-text-muted"
+              aria-hidden="true"
+            />
+          </div>
+        ) : (
+          <span className="min-w-0 truncate text-xs text-text-muted">{task.assignee}</span>
         )}
+        <button
+          type="button"
+          onClick={() => onCopy(task)}
+          aria-label={`Copy context for "${task.title}"`}
+          title="Copy context"
+          className="relative z-10 ml-auto shrink-0 rounded-full p-1.5 text-text-muted hover:bg-slate-100 hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          <Copy size={14} aria-hidden="true" />
+        </button>
       </div>
     </article>
   );

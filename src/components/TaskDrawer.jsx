@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { Copy } from 'lucide-react';
 import { STAGES } from '../constants';
 import ContextField from './ContextField';
 import Drawer, { Field, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
 import { TASK_TYPES } from './taskTypes';
 
 // The same drawer is used for creating and editing a task (M5).
-export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onClose }) {
+export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onCopy, onClose }) {
   const [draft, setDraft] = useState(task);
 
   const set = (field) => (e) => setDraft({ ...draft, [field]: e.target.value });
@@ -39,6 +40,16 @@ export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onClos
         </button>
       )}
       <div className="ml-auto flex gap-2">
+        {/* Copies what is on screen, including unsaved edits. */}
+        <button
+          type="button"
+          onClick={() => onCopy(draft)}
+          disabled={!canSave}
+          className={`${secondaryButtonClass} flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-50`}
+        >
+          <Copy size={14} aria-hidden="true" />
+          Copy context
+        </button>
         <button type="button" onClick={onClose} className={secondaryButtonClass}>
           Cancel
         </button>

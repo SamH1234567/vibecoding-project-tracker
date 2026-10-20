@@ -48,3 +48,6 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | "Last updated … ago" hint; contextUpdatedAt set automatically on save | M9 `task-context` | `ContextField.jsx`, `TaskDrawer.jsx`, `src/lib/dates.js` | |
 | New tasks pre-filled with Background / Constraints / Tried so far / Pick up template | M9 `task-context` | `src/seed.js`, `src/lib/store.js` | |
 | Write / Preview toggle with rendered Markdown | M9 `task-context` | `ContextField.jsx` (react-markdown) | |
+| "Copy context" button on every card and in the task drawer | M10 `copy-context` | `TaskCard.jsx`, `TaskDrawer.jsx`, `App.jsx` | |
+| Markdown briefing: title, description, type/status/owner/due/tool, filled context sections, outcome | M10 `copy-context` | `src/lib/briefing.js` | |
+| "Context copied, ready to paste." toast (error toast if the clipboard is blocked) | M10 `copy-context` | `src/components/Toast.jsx`, `App.jsx` | |

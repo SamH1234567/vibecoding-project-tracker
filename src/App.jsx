@@ -5,6 +5,7 @@ import TaskDrawer from './components/TaskDrawer';
 import TeamDrawer from './components/TeamDrawer';
 import TeamStrip from './components/TeamStrip';
 import Toast from './components/Toast';
+import { copyText, toBriefing } from './lib/briefing';
 import { createTask, useStore } from './lib/store';
 
 /**
@@ -52,7 +53,7 @@ export default function App() {
   const [managingTeam, setManagingTeam] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const showToast = (message) => setToast({ message, id: crypto.randomUUID() });
+  const showToast = (message, error = false) => setToast({ message, error, id: crypto.randomUUID() });
   const clearToast = useCallback(() => setToast(null), []);
 
   const openNew = (status = 'todo') =>
@@ -73,6 +74,15 @@ export default function App() {
   function handleHandOff(task, assignee) {
     updateTask({ ...task, assignee });
     showToast(`Handed off to ${assignee}.`);
+  }
+
+  async function handleCopy(task) {
+    try {
+      await copyText(toBriefing(task));
+      showToast('Context copied, ready to paste.');
+    } catch {
+      showToast("Couldn't copy. Check clipboard permissions.", true);
+    }
   }
 
   function handleSaveTeam(nextTeam) {
@@ -121,7 +131,7 @@ export default function App() {
 
       <TeamStrip team={team} tasks={tasks} onManage={() => setManagingTeam(true)} onOpenTask={openEdit} />
 
-      <Board tasks={tasks} team={team} onOpenTask={openEdit} onAddTask={openNew} onHandOff={handleHandOff} />
+      <Board tasks={tasks} team={team} onOpenTask={openEdit} onAddTask={openNew} onHandOff={handleHandOff} onCopy={handleCopy} />
 
       {editing && (
         <TaskDrawer
@@ -131,6 +141,7 @@ export default function App() {
           team={team}
           onSave={handleSave}
           onDelete={handleDelete}
+          onCopy={handleCopy}
           onClose={closeDrawer}
         />
       )}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 // Short confirmation message, bottom centre. Fades in over 200 ms (DESIGN §7)
 // and dismisses itself. Announced politely to screen readers.
@@ -17,7 +17,7 @@ export default function Toast({ toast, onDone }) {
           key={toast.id}
           className="flex animate-fade-in items-center gap-2 rounded-full bg-text-primary px-4 py-2 text-sm text-white shadow-lg"
         >
-          <Check size={15} aria-hidden="true" />
+          {toast.error ? <X size={15} aria-hidden="true" /> : <Check size={15} aria-hidden="true" />}
           {toast.message}
         </div>
       )}
