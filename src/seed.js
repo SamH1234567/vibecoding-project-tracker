@@ -107,6 +107,15 @@ Check the fix around midnight before approving.
   ];
 }
 
+// Starting team from PRD §8. Member names are the values used in `Task.assignee`.
+export function seedTeam() {
+  return [
+    { id: crypto.randomUUID(), name: 'Sam Hancock', email: '', github: 'SamH1234567' },
+    { id: crypto.randomUUID(), name: 'Alex Smith', email: 'alex.smith@example.com', github: '' },
+    { id: crypto.randomUUID(), name: 'Jo Smith', email: 'jo.smith@example.com', github: '' },
+  ];
+}
+
 export function seedAnchors() {
   return [
     { id: 'presentation',  label: 'Presentation',  url: null },

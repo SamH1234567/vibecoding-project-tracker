@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Plus } from 'lucide-react';
 import Board from './components/Board';
 import TaskDrawer from './components/TaskDrawer';
+import TeamDrawer from './components/TeamDrawer';
+import TeamStrip from './components/TeamStrip';
+import Toast from './components/Toast';
 import { createTask, useStore } from './lib/store';
 
 /**
@@ -42,19 +45,39 @@ import { createTask, useStore } from './lib/store';
  */
 
 export default function App() {
-  const { tasks, addTask, updateTask, deleteTask, resetDemoData } = useStore();
+  const { tasks, addTask, updateTask, deleteTask, team, saveTeam, resetDemoData } = useStore();
 
   // The task open in the drawer, or null when it is closed.
   const [editing, setEditing] = useState(null);
+  const [managingTeam, setManagingTeam] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const openNew = (status = 'todo') => setEditing({ task: createTask({ status }), isNew: true });
+  const showToast = (message) => setToast({ message, id: crypto.randomUUID() });
+  const clearToast = useCallback(() => setToast(null), []);
+
+  const openNew = (status = 'todo') =>
+    setEditing({ task: createTask({ status, assignee: team[0]?.name ?? '' }), isNew: true });
   const openEdit = (task) => setEditing({ task, isNew: false });
   const closeDrawer = () => setEditing(null);
 
   function handleSave(task) {
-    if (editing.isNew) addTask(task);
-    else updateTask(task);
+    if (editing.isNew) {
+      addTask(task);
+    } else {
+      updateTask(task);
+      if (task.assignee !== editing.task.assignee) showToast(`Handed off to ${task.assignee}.`);
+    }
     closeDrawer();
+  }
+
+  function handleHandOff(task, assignee) {
+    updateTask({ ...task, assignee });
+    showToast(`Handed off to ${assignee}.`);
+  }
+
+  function handleSaveTeam(nextTeam) {
+    saveTeam(nextTeam);
+    setManagingTeam(false);
   }
 
   function handleDelete(task) {
@@ -96,18 +119,27 @@ export default function App() {
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      <Board tasks={tasks} onOpenTask={openEdit} onAddTask={openNew} />
+      <TeamStrip team={team} tasks={tasks} onManage={() => setManagingTeam(true)} onOpenTask={openEdit} />
+
+      <Board tasks={tasks} team={team} onOpenTask={openEdit} onAddTask={openNew} onHandOff={handleHandOff} />
 
       {editing && (
         <TaskDrawer
           key={editing.task.id}
           task={editing.task}
           isNew={editing.isNew}
+          team={team}
           onSave={handleSave}
           onDelete={handleDelete}
           onClose={closeDrawer}
         />
       )}
+
+      {managingTeam && (
+        <TeamDrawer team={team} tasks={tasks} onSave={handleSaveTeam} onClose={() => setManagingTeam(false)} />
+      )}
+
+      <Toast toast={toast} onDone={clearToast} />
     </div>
   );
 }

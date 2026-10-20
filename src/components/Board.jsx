@@ -1,7 +1,7 @@
 import { STAGES } from '../constants';
 import TaskCard from './TaskCard';
 
-export default function Board({ tasks, onOpenTask, onAddTask }) {
+export default function Board({ tasks, team, onOpenTask, onAddTask, onHandOff }) {
   return (
     <main className="grid grid-cols-4 gap-4">
       {STAGES.map((stage) => {
@@ -24,7 +24,9 @@ export default function Board({ tasks, onOpenTask, onAddTask }) {
                 <span className="mt-1 block text-xs">Add a task</span>
               </button>
             ) : (
-              stageTasks.map((task) => <TaskCard key={task.id} task={task} onOpen={onOpenTask} />)
+              stageTasks.map((task) => (
+                <TaskCard key={task.id} task={task} team={team} onOpen={onOpenTask} onHandOff={onHandOff} />
+              ))
             )}
           </section>
         );

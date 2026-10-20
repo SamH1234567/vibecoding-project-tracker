@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { TEAM } from '../constants';
-import { CONTEXT_TEMPLATE, seedAnchors, seedTasks } from '../seed';
+import { CONTEXT_TEMPLATE, seedAnchors, seedTasks, seedTeam } from '../seed';
 import { todayISO } from './dates';
 
-// The single data-access layer. Components read and write tasks and anchors
+// The single data-access layer. Components read and write tasks, team and anchors
 // only through `useStore()`; nothing else touches localStorage.
 
 const KEYS = {
   tasks: 'vibetracker.tasks',
   anchors: 'vibetracker.anchors',
+  team: 'vibetracker.team',
 };
 
 /**
@@ -40,6 +40,7 @@ export function useLocalStorage(key, initialValue) {
 export function useStore() {
   const [tasks, setTasks] = useLocalStorage(KEYS.tasks, seedTasks);
   const [anchors, setAnchors] = useLocalStorage(KEYS.anchors, seedAnchors);
+  const [team, setTeam] = useLocalStorage(KEYS.team, seedTeam);
 
   function addTask(task) {
     setTasks((prev) => [...prev, task]);
@@ -53,13 +54,27 @@ export function useStore() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }
 
+  // Tasks store the assignee by name, so a rename is carried across to them.
+  function saveTeam(nextTeam) {
+    const renames = new Map();
+    for (const member of nextTeam) {
+      const before = team.find((m) => m.id === member.id);
+      if (before && before.name !== member.name) renames.set(before.name, member.name);
+    }
+    if (renames.size > 0) {
+      setTasks((prev) => prev.map((t) => (renames.has(t.assignee) ? { ...t, assignee: renames.get(t.assignee) } : t)));
+    }
+    setTeam(nextTeam);
+  }
+
   // Saved data always wins over the seed, so this is the only way back to it.
   function resetDemoData() {
     setTasks(seedTasks());
     setAnchors(seedAnchors());
+    setTeam(seedTeam());
   }
 
-  return { tasks, addTask, updateTask, deleteTask, anchors, setAnchors, resetDemoData };
+  return { tasks, addTask, updateTask, deleteTask, team, saveTeam, anchors, setAnchors, resetDemoData };
 }
 
 // A blank task with every field set, ready for the "New task" drawer.
@@ -70,7 +85,7 @@ export function createTask(overrides = {}) {
     description: '',
     type: 'feature',
     status: 'todo',
-    assignee: TEAM[0],
+    assignee: '',
     dueDate: null,
     createdDate: todayISO(),
     context: CONTEXT_TEMPLATE,

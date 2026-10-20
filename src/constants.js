@@ -7,8 +7,5 @@ export const STAGES = [
   { id: 'done',        label: 'Done' },
 ];
 
-// Starting team from PRD §8. These are the valid values for `Task.assignee`.
-export const TEAM = ['Sam Hancock', 'Alex Smith', 'Jo Smith'];
-
 // Tools offered for `Task.contextTool` (PRD §5).
 export const CONTEXT_TOOLS = ['Claude', 'ChatGPT', 'Cursor', 'Lovable', 'Replit', 'Other'];

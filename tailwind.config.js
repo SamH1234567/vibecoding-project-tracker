@@ -16,6 +16,13 @@ export default {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
+      // The only animation allowed by DESIGN §7: a 200 ms toast fade.
+      keyframes: {
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+      },
+      animation: {
+        'fade-in': 'fade-in 200ms ease-out',
+      },
     },
   },
   plugins: [],
