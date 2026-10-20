@@ -44,7 +44,7 @@ export const STAGES = [
 
 // Replace these placeholders with the three names from PRD §8 before M4.
 // They become the only valid values for `Task.assignee`.
-export const TEAM = ['Teammate A', 'Teammate B', 'Teammate C'];
+export const TEAM = ['Sam Hancock', 'Alex Smith', 'Jo Smith'];
 
 /**
  * A tiny localStorage hook — survives reloads, no library needed.
@@ -84,15 +84,12 @@ export default function App() {
   //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-surface-page p-6 font-sans text-text-primary">
       <header className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Vibecoding Project Tracker
-          </h1>
-          <p className="text-sm text-slate-500">
-            {/* Replace this line with your team name from PRD §11. */}
-            Team starter
+          <h1 className="text-2xl font-semibold text-brand-primary">Sprint</h1>
+          <p className="text-sm text-text-muted">
+            Pick up any task right where the last person — or AI — left off.
           </p>
         </div>
       </header>
