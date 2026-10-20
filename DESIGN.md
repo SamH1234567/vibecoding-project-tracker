@@ -82,7 +82,7 @@ One short sentence per element. These set the tone for the build phase — Perso
 
 - **Cards:** White, rounded-xl, soft shadow at rest (shadow-sm) that lifts on hover (shadow-md), no border; a 4 px left stripe in the type colour.
 - **Buttons:** Rounded-full pills. Primary is solid brand-primary with white text; secondary is white with a slate border. Indigo focus ring on all buttons.
-- **Modal:** A drawer that slides in from the right (max-w-lg, full height) over a slate-900/40 backdrop. It is still a modal dialog: focus is trapped and Esc or a backdrop click closes it. The same drawer is used for create and edit.
+- **Modal:** A full-height drawer docked to the right (max-w-lg, no slide animation per §7) over a slate-900/40 backdrop. It is still a modal dialog: focus is trapped and Esc or a backdrop click closes it. The same drawer is used for create and edit.
 - **Empty states:** Ghost card. A faded, dashed placeholder in the empty column reads "Nothing here yet." and opens the new-task drawer with that column's status preselected.
 - **Drag affordance (if used):** The status dropdown is the M5 mechanism. Drag-and-drop between columns is added in M12 (secret sauce), with a grab cursor and a highlighted drop column. The dropdown stays as the keyboard-accessible alternative.
 

@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
 import Board from './components/Board';
-import { useStore } from './lib/store';
+import TaskDrawer from './components/TaskDrawer';
+import { createTask, useStore } from './lib/store';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -39,10 +42,25 @@ import { useStore } from './lib/store';
  */
 
 export default function App() {
-  const { tasks, resetDemoData } = useStore();
+  const { tasks, addTask, updateTask, deleteTask, resetDemoData } = useStore();
 
-  // TODO M5 crud-modal:
-  //   const [editing, setEditing] = useState(null);
+  // The task open in the drawer, or null when it is closed.
+  const [editing, setEditing] = useState(null);
+
+  const openNew = (status = 'todo') => setEditing({ task: createTask({ status }), isNew: true });
+  const openEdit = (task) => setEditing({ task, isNew: false });
+  const closeDrawer = () => setEditing(null);
+
+  function handleSave(task) {
+    if (editing.isNew) addTask(task);
+    else updateTask(task);
+    closeDrawer();
+  }
+
+  function handleDelete(task) {
+    deleteTask(task.id);
+    closeDrawer();
+  }
 
   function handleReset() {
     if (window.confirm('Reset to the demo data? Your changes will be lost.')) resetDemoData();
@@ -57,23 +75,39 @@ export default function App() {
             Pick up any task right where the last person — or AI — left off.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="rounded-full border border-slate-300 bg-surface-card px-4 py-1.5 text-sm text-text-muted hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-        >
-          Reset demo data
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="rounded-full border border-slate-300 bg-surface-card px-4 py-2 text-sm text-text-muted hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            Reset demo data
+          </button>
+          <button
+            type="button"
+            onClick={() => openNew()}
+            className="flex items-center gap-1.5 rounded-full bg-brand-primary px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+          >
+            <Plus size={16} aria-hidden="true" />
+            New task
+          </button>
+        </div>
       </header>
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      {/*
-        TODO M5 crud-modal:
-          Add a "+" button that opens a modal with every Task field.
-          Clicking a card should open the same modal in edit mode.
-      */}
-      <Board tasks={tasks} />
+      <Board tasks={tasks} onOpenTask={openEdit} onAddTask={openNew} />
+
+      {editing && (
+        <TaskDrawer
+          key={editing.task.id}
+          task={editing.task}
+          isNew={editing.isNew}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          onClose={closeDrawer}
+        />
+      )}
     </div>
   );
 }

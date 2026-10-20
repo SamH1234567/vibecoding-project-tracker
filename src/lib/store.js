@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { seedAnchors, seedTasks } from '../seed';
+import { TEAM } from '../constants';
+import { CONTEXT_TEMPLATE, seedAnchors, seedTasks } from '../seed';
+import { todayISO } from './dates';
 
 // The single data-access layer. Components read and write tasks and anchors
 // only through `useStore()`; nothing else touches localStorage.
@@ -39,11 +41,42 @@ export function useStore() {
   const [tasks, setTasks] = useLocalStorage(KEYS.tasks, seedTasks);
   const [anchors, setAnchors] = useLocalStorage(KEYS.anchors, seedAnchors);
 
+  function addTask(task) {
+    setTasks((prev) => [...prev, task]);
+  }
+
+  function updateTask(task) {
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
+  }
+
+  function deleteTask(id) {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }
+
   // Saved data always wins over the seed, so this is the only way back to it.
   function resetDemoData() {
     setTasks(seedTasks());
     setAnchors(seedAnchors());
   }
 
-  return { tasks, setTasks, anchors, setAnchors, resetDemoData };
+  return { tasks, addTask, updateTask, deleteTask, anchors, setAnchors, resetDemoData };
+}
+
+// A blank task with every field set, ready for the "New task" drawer.
+export function createTask(overrides = {}) {
+  return {
+    id: crypto.randomUUID(),
+    title: '',
+    description: '',
+    type: 'feature',
+    status: 'todo',
+    assignee: TEAM[0],
+    dueDate: null,
+    createdDate: todayISO(),
+    context: CONTEXT_TEMPLATE,
+    contextTool: null,
+    contextUpdatedAt: null,
+    outcome: '',
+    ...overrides,
+  };
 }
