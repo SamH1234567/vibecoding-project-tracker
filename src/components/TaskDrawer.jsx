@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { STAGES, TEAM } from '../constants';
+import { TASK_TYPES } from './taskTypes';
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -110,12 +111,30 @@ export default function TaskDrawer({ task, isNew, onSave, onDelete, onClose }) {
             </Field>
 
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Type" htmlFor="task-type">
-                <select id="task-type" value={draft.type} onChange={set('type')} className={inputClass}>
-                  <option value="feature">Feature</option>
-                  <option value="bug">Bug</option>
-                </select>
-              </Field>
+              <fieldset className="flex flex-col gap-1">
+                <legend className="mb-1 text-xs font-medium text-text-muted">Type</legend>
+                <div className="flex gap-2">
+                  {Object.entries(TASK_TYPES).map(([value, type]) => (
+                    <label
+                      key={value}
+                      className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-primary ${
+                        draft.type === value ? type.selected : 'border-slate-300 text-text-muted hover:bg-slate-50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="task-type"
+                        value={value}
+                        checked={draft.type === value}
+                        onChange={set('type')}
+                        className="sr-only"
+                      />
+                      <type.Icon size={15} aria-hidden="true" />
+                      {type.label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
 
               <Field label="Status" htmlFor="task-status">
                 <select id="task-status" value={draft.status} onChange={set('status')} className={inputClass}>
