@@ -18,3 +18,35 @@ export function addDaysISO(days) {
   d.setDate(d.getDate() + days);
   return toISODate(d);
 }
+
+// 'YYYY-MM-DD' as a local-midnight Date (safe, unlike `new Date(iso)`).
+export function parseISODate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// Whole calendar days from today to `iso`: 0 today, 1 tomorrow, -1 yesterday.
+// Rounded because a BST/GMT change makes one day 23 or 25 hours long.
+export function daysUntil(iso) {
+  return Math.round((parseISODate(iso) - parseISODate(todayISO())) / 86_400_000);
+}
+
+export function formatShortDate(iso) {
+  return parseISODate(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+/**
+ * Due-date state for a task (DESIGN §2, M8), or null when it has no due date.
+ *   neutral  – task is Done (overrides the date)
+ *   overdue  – the due date has passed
+ *   warning  – due today or within the next 2 days
+ *   safe     – more than 2 days away
+ */
+export function dueState(task) {
+  if (!task.dueDate) return null;
+  if (task.status === 'done') return 'neutral';
+  const days = daysUntil(task.dueDate);
+  if (days < 0) return 'overdue';
+  if (days <= 2) return 'warning';
+  return 'safe';
+}

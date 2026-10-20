@@ -43,3 +43,4 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | Click a member to see their open tasks (Doing / Reviewing / Up next) | M7 `task-owner` | `src/components/TeamStrip.jsx` | |
 | Manage team: add / rename / remove members, email, GitHub | M7 `task-owner` | `src/components/TeamDrawer.jsx`, `src/lib/store.js` | |
 | Renaming a member updates their tasks; can't remove a member who owns tasks | M7 `task-owner` | `src/lib/store.js`, `TeamDrawer.jsx` | |
+| Due-date chip on cards: green >2 days, amber 0–2 days, red overdue, grey when Done; text label + icon, not colour alone | M8 `due-tint` | `src/components/DueChip.jsx`, `src/lib/dates.js` | |

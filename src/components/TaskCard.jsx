@@ -1,4 +1,5 @@
 import Avatar from './Avatar';
+import DueChip from './DueChip';
 import { TASK_TYPES } from './taskTypes';
 
 export default function TaskCard({ task, team, onOpen, onHandOff }) {
@@ -22,6 +23,12 @@ export default function TaskCard({ task, team, onOpen, onHandOff }) {
           {task.title}
         </button>
       </h3>
+
+      {task.dueDate && (
+        <div className="mt-2">
+          <DueChip task={task} />
+        </div>
+      )}
 
       <div className="mt-3 flex items-center gap-2">
         <Avatar name={task.assignee} />
