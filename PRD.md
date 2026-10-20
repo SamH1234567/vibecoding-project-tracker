@@ -95,9 +95,10 @@ Fill these in before tagging `prd-done`:
 
 | Slot | Name | GitHub handle |
 |---|---|---|
-| Teammate A | `<TODO>` | `<TODO>` |
-| Teammate B | `<TODO>` | `<TODO>` |
-| Teammate C | `<TODO>` | `<TODO>` |
+| Teammate A | `Sam Hancock` | `SamH1234567` |
+| Teammate B | `Alex Smith (Architect)` | `` |
+| Teammate C | `Jo Smith (Junior dev)` | `` |
+
 
 These three names become the **only** allowed values for `Task.assignee`. No auth — just a dropdown.
 
@@ -143,8 +144,8 @@ Keep the Context field of each real task up to date as you work. By the end of t
 
 Fill in:
 
-- **Team name:** `<TODO>`
-- **Tagline (one sentence):** `<TODO>`
+- **Team name:** `Sprint`
+- **Tagline (one sentence):** ``
 - **Tracker URL after deploy:** `<TODO>` (Vercel will give it to you)
 
 ## 12. Out of scope (do not build)
