@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import Board from './components/Board';
+import { useStore } from './lib/store';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -29,59 +30,23 @@ import { useState, useEffect } from 'react';
  * @property {'feature'|'bug'} type
  * @property {'todo'|'in-progress'|'review'|'done'} status
  * @property {string} assignee
- * @property {string|null} dueDate     ISO 'YYYY-MM-DD'
- * @property {string} createdDate      ISO 'YYYY-MM-DD'
+ * @property {string|null} dueDate          ISO 'YYYY-MM-DD'
+ * @property {string} createdDate           ISO 'YYYY-MM-DD'
+ * @property {string} context               Markdown briefing (M9)
+ * @property {string|null} contextTool      one of CONTEXT_TOOLS (M9)
+ * @property {string|null} contextUpdatedAt ISO timestamp (M9)
+ * @property {string} outcome               what the AI produced (client requirement)
  */
-
-// The four columns of the board, in render order.
-// Use these IDs everywhere — do not invent new ones.
-export const STAGES = [
-  { id: 'todo',        label: 'To Do' },
-  { id: 'in-progress', label: 'In Progress' },
-  { id: 'review',      label: 'Review' },
-  { id: 'done',        label: 'Done' },
-];
-
-// Replace these placeholders with the three names from PRD §8 before M4.
-// They become the only valid values for `Task.assignee`.
-export const TEAM = ['Sam Hancock', 'Alex Smith', 'Jo Smith'];
-
-/**
- * A tiny localStorage hook — survives reloads, no library needed.
- *
- * Usage:
- *   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', []);
- */
-export function useLocalStorage(key, initialValue) {
-  const [value, setValue] = useState(() => {
-    try {
-      const raw = window.localStorage.getItem(key);
-      return raw != null ? JSON.parse(raw) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      /* quota or private-mode error — silently ignore for hackathon */
-    }
-  }, [key, value]);
-
-  return [value, setValue];
-}
 
 export default function App() {
-  // TODO M4 data-model:
-  //   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', [/* 3-4 seed tasks */]);
-  //
+  const { tasks, resetDemoData } = useStore();
+
   // TODO M5 crud-modal:
   //   const [editing, setEditing] = useState(null);
-  //
-  // TODO M11 anchors:
-  //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
+
+  function handleReset() {
+    if (window.confirm('Reset to the demo data? Your changes will be lost.')) resetDemoData();
+  }
 
   return (
     <div className="min-h-screen bg-surface-page p-6 font-sans text-text-primary">
@@ -92,23 +57,23 @@ export default function App() {
             Pick up any task right where the last person — or AI — left off.
           </p>
         </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="rounded-full border border-slate-300 bg-surface-card px-4 py-1.5 text-sm text-text-muted hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          Reset demo data
+        </button>
       </header>
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
       {/*
-        TODO M4 data-model:
-          Render a Kanban board with the four columns from STAGES.
-          Each column should display the tasks whose status matches its id.
-          Pre-populate 3-4 mock tasks so the board isn't empty on first load.
-
         TODO M5 crud-modal:
           Add a "+" button that opens a modal with every Task field.
           Clicking a card should open the same modal in edit mode.
       */}
-      <main className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 text-slate-400">
-        Build the four-column board here · M4
-      </main>
+      <Board tasks={tasks} />
     </div>
   );
 }
