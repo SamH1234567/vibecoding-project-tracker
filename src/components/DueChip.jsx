@@ -21,8 +21,8 @@ function label(task, state) {
   return `Due ${formatShortDate(task.dueDate)}`;
 }
 
-export default function DueChip({ task }) {
-  const state = dueState(task);
+export default function DueChip({ task, done }) {
+  const state = dueState(task, done);
   if (!state) return null;
   const style = DUE_STATES[state];
 

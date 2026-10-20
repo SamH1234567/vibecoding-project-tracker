@@ -1,25 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { isDone } from '../lib/board';
 import Avatar from './Avatar';
 import { TASK_TYPES } from './taskTypes';
 
-// Open work grouped by what the member is doing with it. Done is left out.
-const GROUPS = [
-  { status: 'in-progress', label: 'Doing' },
-  { status: 'review', label: 'Reviewing' },
-  { status: 'todo', label: 'Up next' },
-];
+// Open work is grouped by column, furthest along first. The last (done)
+// column is left out. "Driving" means anything started: past the first column.
+const openColumns = (board) => board.columns.slice(0, -1).reverse();
+const isDriving = (task, board) => task.status !== board.columns[0].id;
 
-function summarise(owned) {
-  const driving = owned.filter((t) => t.status === 'in-progress');
+function summarise(owned, board) {
+  const driving = owned.filter((t) => isDriving(t, board));
   if (driving.length > 0) return `Driving: ${driving.map((t) => t.title).join(', ')}`;
   if (owned.length > 0) return `Nothing in progress · ${owned.length} open task${owned.length === 1 ? '' : 's'}`;
   return 'No open tasks';
 }
 
-function MemberPill({ member, owned, isOpen, onToggle, onClose, onOpenTask }) {
+function MemberPill({ board, member, owned, isOpen, onToggle, onClose, onOpenTask }) {
   const wrapperRef = useRef(null);
   const buttonRef = useRef(null);
-  const summary = summarise(owned);
+  const summary = summarise(owned, board);
   const listId = `member-tasks-${member.id}`;
 
   // Close on Esc or a click anywhere outside this pill and its list.
@@ -78,11 +77,11 @@ function MemberPill({ member, owned, isOpen, onToggle, onClose, onOpenTask }) {
           {owned.length === 0 ? (
             <p className="px-1 py-2 text-sm text-text-muted">No open tasks.</p>
           ) : (
-            GROUPS.map((group) => {
-              const groupTasks = owned.filter((t) => t.status === group.status);
+            openColumns(board).map((group) => {
+              const groupTasks = owned.filter((t) => t.status === group.id);
               if (groupTasks.length === 0) return null;
               return (
-                <div key={group.status} className="mb-2 last:mb-0">
+                <div key={group.id} className="mb-2 last:mb-0">
                   <h3 className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
                     {group.label}
                   </h3>
@@ -116,7 +115,7 @@ function MemberPill({ member, owned, isOpen, onToggle, onClose, onOpenTask }) {
 
 // "Who's driving what" (M7): each member, a summary of their open work, and
 // a click-to-expand list of it grouped by stage.
-export default function TeamStrip({ team, tasks, onOpenTask }) {
+export default function TeamStrip({ board, team, tasks, onOpenTask }) {
   const [openId, setOpenId] = useState(null);
   const close = useCallback(() => setOpenId(null), []);
 
@@ -125,8 +124,9 @@ export default function TeamStrip({ team, tasks, onOpenTask }) {
       {team.map((member) => (
         <MemberPill
           key={member.id}
+          board={board}
           member={member}
-          owned={tasks.filter((t) => t.assignee === member.name && t.status !== 'done')}
+          owned={tasks.filter((t) => t.assignee === member.name && !isDone(t, board))}
           isOpen={openId === member.id}
           onToggle={() => setOpenId(openId === member.id ? null : member.id)}
           onClose={close}
@@ -139,11 +139,11 @@ export default function TeamStrip({ team, tasks, onOpenTask }) {
 
 // One-line summary shown when the section is collapsed: initials and how many
 // tasks each person has in progress.
-export function TeamSummary({ team, tasks }) {
+export function TeamSummary({ board, team, tasks }) {
   return (
     <span className="flex items-center gap-3 text-xs text-text-muted">
       {team.map((member) => {
-        const driving = tasks.filter((t) => t.assignee === member.name && t.status === 'in-progress').length;
+        const driving = tasks.filter((t) => t.assignee === member.name && isDriving(t, board) && !isDone(t, board)).length;
         return (
           <span key={member.id} className="flex items-center gap-1" title={`${member.name}: ${driving} in progress`}>
             <Avatar name={member.name} />

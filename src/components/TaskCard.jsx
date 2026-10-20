@@ -1,16 +1,27 @@
-import { ChevronDown, Copy } from 'lucide-react';
+import { ChevronDown, Copy, Flag, Link2, ListChecks } from 'lucide-react';
 import Avatar from './Avatar';
 import DueChip from './DueChip';
 import { TASK_TYPES } from './taskTypes';
 
-export default function TaskCard({ task, team, onOpen, onHandOff, onCopy }) {
+export default function TaskCard({ task, team, done, milestone, deliverable, isDragging, onDragStart, onDragEnd, onOpen, onHandOff, onCopy }) {
   const type = TASK_TYPES[task.type];
   const others = team.filter((m) => m.name !== task.assignee);
 
   return (
     // The title button is stretched over the whole card so a click anywhere
     // opens it, while the hand-off dropdown sits above it as its own control.
-    <article className="relative overflow-hidden rounded-xl bg-surface-card p-4 pl-5 shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-brand-primary hover:shadow-md">
+    <article
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', task.id);
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
+      className={`relative overflow-hidden rounded-xl bg-surface-card p-4 pl-5 shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-brand-primary hover:shadow-md ${
+        isDragging ? 'opacity-40' : ''
+      }`}
+    >
       <span className={`absolute inset-y-0 left-0 w-1 ${type.stripe}`} aria-hidden="true" />
       <type.Icon size={16} className={`absolute right-3 top-3 ${type.text}`} aria-hidden="true" />
 
@@ -18,16 +29,42 @@ export default function TaskCard({ task, team, onOpen, onHandOff, onCopy }) {
         <button
           type="button"
           onClick={() => onOpen(task)}
-          className="text-left after:absolute after:inset-0 focus:outline-none"
+          className="cursor-grab text-left after:absolute after:inset-0 focus:outline-none active:cursor-grabbing"
         >
           <span className="sr-only">{type.label}: </span>
           {task.title}
         </button>
       </h3>
 
-      {task.dueDate && (
-        <div className="mt-2">
-          <DueChip task={task} />
+      {(task.dueDate || task.points || task.subtasks.length > 0 || milestone || deliverable) && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-text-muted">
+          {task.dueDate && <DueChip task={task} done={done} />}
+          {task.points && (
+            <span className="font-mono" title="Story points">
+              {task.points} pt{task.points === 1 ? '' : 's'}
+            </span>
+          )}
+          {task.subtasks.length > 0 && (
+            <span className="flex items-center gap-1" title="Sub-requirements done">
+              <ListChecks size={12} aria-hidden="true" />
+              <span className="sr-only">Sub-requirements:</span>
+              {task.subtasks.filter((s) => s.done).length}/{task.subtasks.length}
+            </span>
+          )}
+          {milestone && (
+            <span className="flex min-w-0 items-center gap-1" title="Milestone">
+              <Flag size={12} aria-hidden="true" />
+              <span className="sr-only">Milestone:</span>
+              <span className="truncate">{milestone.name}</span>
+            </span>
+          )}
+          {deliverable && (
+            <span className="flex items-center gap-1" title="For deliverable">
+              <Link2 size={12} aria-hidden="true" />
+              <span className="sr-only">For deliverable:</span>
+              {deliverable.label}
+            </span>
+          )}
         </div>
       )}
 

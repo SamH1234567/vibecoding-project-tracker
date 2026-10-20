@@ -37,14 +37,15 @@ export function formatShortDate(iso) {
 
 /**
  * Due-date state for a task (DESIGN §2, M8), or null when it has no due date.
- *   neutral  – task is Done (overrides the date)
+ * `done` is whether the task is in its board's last column.
+ *   neutral  – task is done (overrides the date)
  *   overdue  – the due date has passed
  *   warning  – due today or within the next 2 days
  *   safe     – more than 2 days away
  */
-export function dueState(task) {
+export function dueState(task, done) {
   if (!task.dueDate) return null;
-  if (task.status === 'done') return 'neutral';
+  if (done) return 'neutral';
   const days = daysUntil(task.dueDate);
   if (days < 0) return 'overdue';
   if (days <= 2) return 'warning';

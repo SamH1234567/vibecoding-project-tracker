@@ -1,4 +1,4 @@
-import { STAGES } from '../constants';
+import { columnLabel } from './board';
 import { formatShortDate } from './dates';
 
 // Drop template headings that were never filled in, so the briefing only
@@ -15,19 +15,27 @@ function stripEmptySections(markdown) {
 }
 
 // A task as a clean Markdown briefing to paste into an AI chat (M10).
-export function toBriefing(task) {
-  const stage = STAGES.find((s) => s.id === task.status)?.label ?? task.status;
+export function toBriefing(task, board) {
+  const stage = columnLabel(board, task.status);
+  const milestone = board.milestones.find((m) => m.id === task.milestoneId);
+  const deliverable = board.anchors.find((a) => a.id === task.deliverableId);
   const details = [
     `- **Type:** ${task.type === 'bug' ? 'Bug' : 'Feature'}`,
     `- **Status:** ${stage}`,
     `- **Owner:** ${task.assignee}`,
     task.dueDate && `- **Due:** ${formatShortDate(task.dueDate)}`,
+    task.points && `- **Points:** ${task.points}`,
+    milestone && `- **Milestone:** ${milestone.name}`,
+    deliverable && `- **For deliverable:** ${deliverable.label}`,
     task.contextTool && `- **Last AI tool:** ${task.contextTool}`,
   ].filter(Boolean);
 
   const parts = [`# ${task.title}`];
   if (task.description.trim()) parts.push(task.description.trim());
   parts.push(details.join('\n'));
+  if (task.subtasks?.length) {
+    parts.push(`## Sub-requirements\n\n${task.subtasks.map((s) => `- [${s.done ? 'x' : ' '}] ${s.title}`).join('\n')}`);
+  }
 
   const context = stripEmptySections(task.context ?? '');
   if (context) parts.push(`## Context\n\n${context.replace(/^(#{1,5}) /gm, '#$1 ')}`);

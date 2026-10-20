@@ -1,18 +1,66 @@
-import { STAGES } from '../constants';
+import { useState } from 'react';
 import TaskCard from './TaskCard';
 
-export default function Board({ tasks, team, onOpenTask, onAddTask, onHandOff, onCopy }) {
+// Drag a card onto another column to change its status (M12). The status
+// dropdown in the task drawer stays as the keyboard-accessible alternative.
+export default function Board({ board, tasks, team, isVisible, onOpenTask, onAddTask, onHandOff, onCopy, onMove }) {
+  const [draggingId, setDraggingId] = useState(null);
+  const [overStage, setOverStage] = useState(null);
+
+  const dragging = tasks.find((t) => t.id === draggingId);
+
+  function endDrag() {
+    setDraggingId(null);
+    setOverStage(null);
+  }
+
+  function handleDragOver(e, stageId) {
+    if (!dragging) return;
+    e.preventDefault(); // allows the drop
+    e.dataTransfer.dropEffect = 'move';
+    if (overStage !== stageId) setOverStage(stageId);
+  }
+
+  function handleDragLeave(e) {
+    // Ignore leaving into a child element of the same column.
+    if (!e.currentTarget.contains(e.relatedTarget)) setOverStage(null);
+  }
+
+  function handleDrop(e, stageId) {
+    e.preventDefault();
+    if (dragging && dragging.status !== stageId) onMove(dragging, stageId);
+    endDrag();
+  }
+
   return (
-    <main className="grid grid-cols-4 gap-4">
-      {STAGES.map((stage) => {
+    <main className="grid gap-4" style={{ gridTemplateColumns: `repeat(${board.columns.length}, minmax(0, 1fr))` }}>
+      {board.columns.map((stage, index) => {
+        const isDoneColumn = index === board.columns.length - 1;
         const stageTasks = tasks.filter((t) => t.status === stage.id);
+        const shownTasks = stageTasks.filter(isVisible);
+        const filtered = shownTasks.length !== stageTasks.length;
+        const isTarget = overStage === stage.id && dragging?.status !== stage.id;
         return (
-          <section key={stage.id} className="flex flex-col gap-3 rounded-xl bg-slate-100/70 p-3">
+          <section
+            key={stage.id}
+            onDragOver={(e) => handleDragOver(e, stage.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, stage.id)}
+            className={`flex flex-col gap-3 rounded-xl p-3 ${
+              isTarget ? 'bg-brand-primary/5 ring-2 ring-inset ring-brand-primary/40' : 'bg-slate-100/70'
+            }`}
+          >
             <h2 className="flex items-center justify-between px-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
               {stage.label}
-              <span className="font-mono">{stageTasks.length}</span>
+              <span className="font-mono" aria-label={filtered ? `${shownTasks.length} of ${stageTasks.length} shown` : undefined}>
+                {filtered ? `${shownTasks.length}/${stageTasks.length}` : stageTasks.length}
+              </span>
             </h2>
-            {stageTasks.length === 0 ? (
+            {stageTasks.length > 0 && shownTasks.length === 0 ? (
+              <p className="rounded-xl border-2 border-dashed border-slate-200 p-4 text-center text-xs text-text-muted">
+                No matching tasks.
+              </p>
+            ) : stageTasks.length === 0 ? (
               // Ghost card (DESIGN §4): opens a new task already set to this column.
               <button
                 type="button"
@@ -24,11 +72,17 @@ export default function Board({ tasks, team, onOpenTask, onAddTask, onHandOff, o
                 <span className="mt-1 block text-xs">Add a task</span>
               </button>
             ) : (
-              stageTasks.map((task) => (
+              shownTasks.map((task) => (
                 <TaskCard
                   key={task.id}
                   task={task}
                   team={team}
+                  done={isDoneColumn}
+                  milestone={board.milestones.find((m) => m.id === task.milestoneId)}
+                  deliverable={board.anchors.find((a) => a.id === task.deliverableId)}
+                  isDragging={task.id === draggingId}
+                  onDragStart={() => setDraggingId(task.id)}
+                  onDragEnd={endDrag}
                   onOpen={onOpenTask}
                   onHandOff={onHandOff}
                   onCopy={onCopy}

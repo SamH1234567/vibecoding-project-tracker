@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Copy } from 'lucide-react';
-import { STAGES } from '../constants';
+import { POINTS } from '../lib/board';
 import ContextField from './ContextField';
 import Drawer, { Field, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
+import SubtaskList from './SubtaskList';
 import { TASK_TYPES } from './taskTypes';
 
 // The same drawer is used for creating and editing a task (M5).
-export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onCopy, onClose }) {
+export default function TaskDrawer({ task, isNew, board, team, onSave, onDelete, onCopy, onClose }) {
   const [draft, setDraft] = useState(task);
 
   const set = (field) => (e) => setDraft({ ...draft, [field]: e.target.value });
@@ -104,7 +105,7 @@ export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onCopy
 
         <Field label="Status" htmlFor="task-status">
           <select id="task-status" value={draft.status} onChange={set('status')} className={inputClass}>
-            {STAGES.map((s) => (
+            {board.columns.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
               </option>
@@ -131,7 +132,57 @@ export default function TaskDrawer({ task, isNew, team, onSave, onDelete, onCopy
             className={inputClass}
           />
         </Field>
+
+        <Field label="Points" htmlFor="task-points">
+          <select
+            id="task-points"
+            value={draft.points ?? ''}
+            onChange={(e) => setDraft({ ...draft, points: e.target.value ? Number(e.target.value) : null })}
+            className={inputClass}
+          >
+            <option value="">Not estimated (counts as 1)</option>
+            {POINTS.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Milestone" htmlFor="task-milestone">
+          <select
+            id="task-milestone"
+            value={draft.milestoneId ?? ''}
+            onChange={(e) => setDraft({ ...draft, milestoneId: e.target.value || null })}
+            className={inputClass}
+          >
+            <option value="">None</option>
+            {board.milestones.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="For deliverable" htmlFor="task-deliverable">
+          <select
+            id="task-deliverable"
+            value={draft.deliverableId ?? ''}
+            onChange={(e) => setDraft({ ...draft, deliverableId: e.target.value || null })}
+            className={inputClass}
+          >
+            <option value="">None</option>
+            {board.anchors.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+        </Field>
       </div>
+
+      <SubtaskList subtasks={draft.subtasks} onChange={(subtasks) => setDraft({ ...draft, subtasks })} />
 
       <ContextField draft={draft} setDraft={setDraft} />
     </Drawer>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isDone } from '../lib/board';
 import { BookOpen, ExternalLink, FileText, MonitorPlay, Presentation } from 'lucide-react';
 
 const ICONS = {
@@ -21,7 +22,7 @@ function normaliseUrl(text) {
   }
 }
 
-function AnchorCard({ anchor, onSave }) {
+function AnchorCard({ anchor, linked, onSave, onShowTasks }) {
   const [text, setText] = useState(anchor.url ?? '');
   const [invalid, setInvalid] = useState(false);
   const Icon = ICONS[anchor.id];
@@ -85,6 +86,19 @@ function AnchorCard({ anchor, onSave }) {
           </a>
         )}
       </div>
+      {linked.total === 0 ? (
+        <p className="text-[11px] text-text-muted">No tasks linked</p>
+      ) : (
+        // Filters the board to this deliverable's tasks.
+        <button
+          type="button"
+          onClick={() => onShowTasks(anchor.id)}
+          aria-label={`Show the ${linked.total} task${linked.total === 1 ? '' : 's'} linked to ${anchor.label}`}
+          className="self-start rounded-full text-[11px] text-text-muted underline decoration-dotted underline-offset-2 hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        >
+          {linked.total} task{linked.total === 1 ? '' : 's'} linked · {linked.open} open
+        </button>
+      )}
       {invalid && (
         <p id={`${inputId}-error`} className="text-xs text-text-muted">
           That doesn't look like a web link.
@@ -95,11 +109,16 @@ function AnchorCard({ anchor, onSave }) {
 }
 
 // The four pinned final-project deliverables (M11), above the board.
-export default function AnchorBoard({ anchors, onSave }) {
+// Each card also counts the tasks linked to that deliverable.
+export default function AnchorBoard({ anchors, tasks, board, onSave, onShowTasks }) {
+  const linkedTo = (id) => {
+    const linked = tasks.filter((t) => t.deliverableId === id);
+    return { total: linked.length, open: linked.filter((t) => !isDone(t, board)).length };
+  };
   return (
     <div className="grid grid-cols-4 gap-4">
       {anchors.map((anchor) => (
-        <AnchorCard key={`${anchor.id}:${anchor.url ?? ''}`} anchor={anchor} onSave={onSave} />
+        <AnchorCard key={`${anchor.id}:${anchor.url ?? ''}`} anchor={anchor} linked={linkedTo(anchor.id)} onSave={onSave} onShowTasks={onShowTasks} />
       ))}
     </div>
   );

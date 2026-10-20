@@ -11,7 +11,8 @@ export default function Drawer({ title, onClose, onSubmit, footer, children }) {
 
   useEffect(() => {
     const opener = document.activeElement;
-    panelRef.current.querySelector('input, select, textarea')?.focus();
+    const panel = panelRef.current;
+    (panel.querySelector('input, select, textarea') ?? panel.querySelector(FOCUSABLE))?.focus();
     return () => opener?.focus?.();
   }, []);
 

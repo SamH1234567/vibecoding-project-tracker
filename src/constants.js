@@ -1,6 +1,6 @@
-// The four columns of the board, in render order (PRD §7).
-// Use these IDs everywhere — do not invent new ones.
-export const STAGES = [
+// Columns for a new board, in render order (PRD §7). Boards can customise
+// their columns, so code must read a board's own `columns`, not this list.
+export const DEFAULT_COLUMNS = [
   { id: 'todo',        label: 'To Do' },
   { id: 'in-progress', label: 'In Progress' },
   { id: 'review',      label: 'Review' },
