@@ -1,9 +1,11 @@
 import { useCallback, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Pin, Plus, Users } from 'lucide-react';
+import AnchorBoard, { AnchorSummary } from './components/AnchorBoard';
 import Board from './components/Board';
+import CollapsibleSection from './components/CollapsibleSection';
 import TaskDrawer from './components/TaskDrawer';
 import TeamDrawer from './components/TeamDrawer';
-import TeamStrip from './components/TeamStrip';
+import TeamStrip, { TeamSummary } from './components/TeamStrip';
 import Toast from './components/Toast';
 import { copyText, toBriefing } from './lib/briefing';
 import { createTask, useStore } from './lib/store';
@@ -46,7 +48,7 @@ import { createTask, useStore } from './lib/store';
  */
 
 export default function App() {
-  const { tasks, addTask, updateTask, deleteTask, team, saveTeam, resetDemoData } = useStore();
+  const { tasks, addTask, updateTask, deleteTask, team, saveTeam, anchors, updateAnchor, resetDemoData } = useStore();
 
   // The task open in the drawer, or null when it is closed.
   const [editing, setEditing] = useState(null);
@@ -127,9 +129,28 @@ export default function App() {
         </div>
       </header>
 
-      {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
+      <CollapsibleSection id="deliverables" icon={Pin} title="Deliverables" summary={<AnchorSummary anchors={anchors} />}>
+        <AnchorBoard anchors={anchors} onSave={updateAnchor} />
+      </CollapsibleSection>
 
-      <TeamStrip team={team} tasks={tasks} onManage={() => setManagingTeam(true)} onOpenTask={openEdit} />
+      <CollapsibleSection
+        id="team"
+        icon={Users}
+        title="Team"
+        summary={<TeamSummary team={team} tasks={tasks} />}
+        actions={
+          <button
+            type="button"
+            onClick={() => setManagingTeam(true)}
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          >
+            <Users size={14} aria-hidden="true" />
+            Manage team
+          </button>
+        }
+      >
+        <TeamStrip team={team} tasks={tasks} onOpenTask={openEdit} />
+      </CollapsibleSection>
 
       <Board tasks={tasks} team={team} onOpenTask={openEdit} onAddTask={openNew} onHandOff={handleHandOff} onCopy={handleCopy} />
 

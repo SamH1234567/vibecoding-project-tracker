@@ -54,6 +54,10 @@ export function useStore() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }
 
+  function updateAnchor(id, url) {
+    setAnchors((prev) => prev.map((a) => (a.id === id ? { ...a, url } : a)));
+  }
+
   // Tasks store the assignee by name, so a rename is carried across to them.
   function saveTeam(nextTeam) {
     const renames = new Map();
@@ -74,7 +78,12 @@ export function useStore() {
     setTeam(seedTeam());
   }
 
-  return { tasks, addTask, updateTask, deleteTask, team, saveTeam, anchors, setAnchors, resetDemoData };
+  return { tasks, addTask, updateTask, deleteTask, team, saveTeam, anchors, updateAnchor, resetDemoData };
+}
+
+// Whether a collapsible section above the board is open. Open by default.
+export function usePanelOpen(id) {
+  return useLocalStorage(`vibetracker.ui.${id}`, true);
 }
 
 // A blank task with every field set, ready for the "New task" drawer.

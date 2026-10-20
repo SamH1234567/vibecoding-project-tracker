@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Users } from 'lucide-react';
 import Avatar from './Avatar';
 import { TASK_TYPES } from './taskTypes';
 
@@ -117,12 +116,12 @@ function MemberPill({ member, owned, isOpen, onToggle, onClose, onOpenTask }) {
 
 // "Who's driving what" (M7): each member, a summary of their open work, and
 // a click-to-expand list of it grouped by stage.
-export default function TeamStrip({ team, tasks, onManage, onOpenTask }) {
+export default function TeamStrip({ team, tasks, onOpenTask }) {
   const [openId, setOpenId] = useState(null);
   const close = useCallback(() => setOpenId(null), []);
 
   return (
-    <section aria-label="Who's driving what" className="mb-6 flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       {team.map((member) => (
         <MemberPill
           key={member.id}
@@ -134,14 +133,24 @@ export default function TeamStrip({ team, tasks, onManage, onOpenTask }) {
           onOpenTask={onOpenTask}
         />
       ))}
-      <button
-        type="button"
-        onClick={onManage}
-        className="flex items-center gap-1.5 rounded-full px-3 py-2 text-xs text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-      >
-        <Users size={14} aria-hidden="true" />
-        Manage team
-      </button>
-    </section>
+    </div>
+  );
+}
+
+// One-line summary shown when the section is collapsed: initials and how many
+// tasks each person has in progress.
+export function TeamSummary({ team, tasks }) {
+  return (
+    <span className="flex items-center gap-3 text-xs text-text-muted">
+      {team.map((member) => {
+        const driving = tasks.filter((t) => t.assignee === member.name && t.status === 'in-progress').length;
+        return (
+          <span key={member.id} className="flex items-center gap-1" title={`${member.name}: ${driving} in progress`}>
+            <Avatar name={member.name} />
+            {driving > 0 && <span className="font-mono">{driving}</span>}
+          </span>
+        );
+      })}
+    </span>
   );
 }

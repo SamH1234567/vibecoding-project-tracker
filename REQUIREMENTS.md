@@ -51,3 +51,7 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | "Copy context" button on every card and in the task drawer | M10 `copy-context` | `TaskCard.jsx`, `TaskDrawer.jsx`, `App.jsx` | |
 | Markdown briefing: title, description, type/status/owner/due/tool, filled context sections, outcome | M10 `copy-context` | `src/lib/briefing.js` | |
 | "Context copied, ready to paste." toast (error toast if the clipboard is blocked) | M10 `copy-context` | `src/components/Toast.jsx`, `App.jsx` | |
+| Pinned deliverables above the board: Presentation / Demo / Report / Documentation | M11 `project-deliverables` | `src/components/AnchorBoard.jsx` | |
+| Link box per deliverable, saved on Enter / leaving the field; bare domains get https://; non-web links rejected | M11 `project-deliverables` | `AnchorBoard.jsx`, `src/lib/store.js` | |
+| Filled / empty status dot with "Linked" / "No link yet" text; open-in-new-tab button | M11 `project-deliverables` | `AnchorBoard.jsx` | |
+| Deliverables and Team sections collapse to a one-line summary (dots / initials + in-progress count); open on first visit, choice remembered | M11 `project-deliverables` | `src/components/CollapsibleSection.jsx`, `AnchorBoard.jsx`, `TeamStrip.jsx`, `src/lib/store.js` | |
