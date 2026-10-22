@@ -147,7 +147,7 @@ Fill in:
 
 - **Team name:** `Sprint`
 - **Tagline (one sentence):** `Pick up any task right where the last person - or AI - left off.`
-- **Tracker URL after deploy:** `<TODO>` (Vercel will give it to you)
+- **Tracker URL after deploy:** `https://vibecoding-project-tracker-alpha.vercel.app/`
 
 ## 12. Out of scope (do not build)
 

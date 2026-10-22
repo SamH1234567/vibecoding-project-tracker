@@ -1,103 +1,67 @@
-# Vibecoding Project Tracker — Hackathon Starter
+# Sprint
 
-You're forking this repo as the starting point for the **UXD Vibecoding Hackathon 2026**. The goal of the hackathon is to ship a Vibecoding Project Tracker in ~3 hours: a Kanban-style tool that tracks your vibecoding tasks and stores the prompts that produced them.
+**Pick up any task right where the last person — or AI — left off.**
 
-This starter gives you:
+Sprint is a Kanban tracker for vibecoding projects. Each task keeps the AI prompt context that produced it, so anyone can copy a clean briefing back into Claude, ChatGPT or Cursor and carry on.
 
-- A pre-written **PRD** (`PRD.md`) — read it. You don't write the PRD this year; your Milestone 2 is to review, fill in the team-specific TODOs, and commit.
-- A pre-written **DESIGN.md** with the design-system slots Person B fills in during M3 (in parallel with M2).
-- A **Vite + React + Tailwind** scaffold with the boilerplate already configured.
-- The locked `Task` data model and `STAGES` constant in `src/App.jsx`.
-- A `useLocalStorage` hook so persistence is one line.
-- Empty TODO markers for every milestone, so AI tools can find them.
+**Live prototype:** https://vibecoding-project-tracker-alpha.vercel.app/ · no sign-up needed: choose **Continue as demo user**.
 
-What you build, starting at M4:
+Built for CM6312 (Cardiff University) from the [UXD Vibecoding Hackathon starter](https://github.com/ignacioalvmar/vibecoding-project-tracker).
 
-- The four-column Kanban board.
-- The add / edit / delete modal.
-- The Prompt Context field (the differentiator).
-- The "Copy as Prompt Context" button (the demo's hero moment).
-- And everything else through M13.
+## Try it in two minutes
 
-## Quick start
+1. Open the link and choose **Continue as demo user**.
+2. **Board:** drag a card to another column, or click it to edit every field in the side drawer.
+3. **Copy context** (⧉ on any card): paste into an AI chat to get a Markdown briefing with the task, its sub-requirements and its prompt context.
+4. **Hand off:** click the owner's name on a card and pick a teammate.
+5. **Insights** (header): burndown for a milestone, completions per day, workload, AI tool use and recent activity.
+6. **Deliverables:** click "N tasks linked" on a deliverable card to filter the board to its tasks.
+7. **Boards:** switch to *Portfolio site* to see a board with its own columns and team; **Board settings** edits columns and milestones.
+
+**Reset demo data** (header) restores the demo at any time.
+
+## Features
+
+| Area | What it does |
+|---|---|
+| Board | Customisable columns (the last one counts as done), drag-and-drop, status dropdown as the keyboard alternative |
+| Tasks | Feature / bug styling, assignee, due-date colours, story points, milestone, linked deliverable, sub-requirements |
+| AI context | Markdown context with live preview, AI tool, outcome, "last updated" hint, starter template |
+| Copy context | One-click Markdown briefing for an AI chat |
+| Team | Avatars, hand-off with confirmation, who's driving what, editable team (name, email, GitHub) |
+| Deliverables | Presentation / Demo / Report / Documentation links with status, linked task counts |
+| Insights | Burndown, completions, workload, AI tool usage, activity log |
+| Boards | Multiple boards, each with its own columns, team, deliverables and milestones |
+| Filters | Search (including context), My tasks, assignee, type, due state, deliverable |
+| Sign-in | Prototype "Who are you?" picker; no passwords, nothing leaves the browser |
+
+[REQUIREMENTS.md](REQUIREMENTS.md) maps every feature to the code that builds it.
+
+## Run locally
 
 ```bash
-# 1. Fork this repo on GitHub. Then clone YOUR fork:
-git clone https://github.com/<your-team>/<your-fork>.git
-cd <your-fork>
-
-# 2. Install dependencies
 npm install
-
-# 3. Run the dev server
 npm run dev
 ```
 
-Open the URL Vite prints (typically `http://localhost:5173`). You should see a placeholder page with the team starter header and "Build the four-column board here · M3" in the middle. That's expected — M3 is your first build milestone.
+Open the URL Vite prints (usually `http://localhost:5173`). `npm run build` produces the production build in `dist/`.
 
-## Milestone workflow
+## How it's built
 
-Every milestone ends with a git tag push. The Hackathon Portal dashboard watches your tags and updates the scoreboard in near real time.
-
-```bash
-git add .
-git commit -m "<tag-name>"
-git tag <tag-name>
-git push --tags
-```
-
-Replace `<tag-name>` with the tag for the milestone you just finished — see the table below. Tag names are lowercase, hyphenated, exact.
-
-| # | Tag | What it means |
-|---|---|---|
-| 1 | `git-linked` | Repo registered on the portal, webhook delivers test ping |
-| 2 | `prd-done` | PRD reviewed, team-specific TODOs filled in |
-| 3 | `design-done` | DESIGN.md filled in, color tokens pasted into `tailwind.config.js` (parallel to M2) |
-| 4 | `data-model` | Four-column board renders with 3-4 mock tasks |
-| 5 | `crud-modal` | Add / edit / delete tasks via a modal, persisted to localStorage |
-| 6 | `tag-style` | Feature vs. bug visual distinction |
-| 7 | `task-owner` | Assignee badge on each card + "Hand off to..." dropdown |
-| 8 | `due-tint` | Cards change color as deadlines approach |
-| 9 | `context` | Curated Context field on the task modal (paste-ready briefing) |
-| 10 | `copy-prompt` | One-click copy formatted prompt to clipboard |
-| 11 | `project-deliverables` | Deliverable Anchor Board pinned above the Kanban |
-| 12 | `secret-sauce` | The one thing that makes your tracker uniquely yours (open-ended) |
-| 13 | `pitch-ready` | Demo dataset loaded, pitch rehearsed |
+- **Vite + React 18 + Tailwind 3**, icons from Lucide, Markdown preview via react-markdown.
+- **No backend:** data is saved in the browser's localStorage through a single data layer, [`src/lib/store.js`](src/lib/store.js). Demo data lives in [`src/seed.js`](src/seed.js).
+- Design decisions are in [DESIGN.md](DESIGN.md); the client brief is in [PRD.md](PRD.md).
+- Deployed on Vercel; every push to `main` redeploys.
 
 ## Repo map
 
 ```
 .
-├── PRD.md              ← READ THIS FIRST · review + fill in TODOs for M2
-├── DESIGN.md           ← Person B fills this in for M3 (parallel to M2)
-├── README.md           ← you are here
-├── package.json
-├── vite.config.js
-├── tailwind.config.js  ← M3 design tokens land here too
-├── postcss.config.js
-├── index.html
-├── .gitignore
+├── PRD.md · DESIGN.md · REQUIREMENTS.md
 └── src/
-    ├── main.jsx        ← React entry point — don't change
-    ├── index.css       ← Tailwind directives — don't change
-    └── App.jsx         ← all your code goes here (or split into more files)
+    ├── App.jsx            page layout and actions
+    ├── seed.js            demo boards, tasks and history
+    ├── constants.js       default columns, AI tools
+    ├── lib/               store, dates, board rules, filters, briefing, analytics
+    └── components/        board, cards, drawers, charts, sign-in
 ```
-
-## Deploy (any time after M3)
-
-Vercel's free tier deploys a Vite + React app in one click:
-
-1. Go to [vercel.com](https://vercel.com), sign in with GitHub.
-2. Import your fork.
-3. Accept the defaults (Vite is auto-detected). Click Deploy.
-4. Drop the resulting URL into PRD §11 and into your team chat.
-
-Re-deploys happen automatically on every push to `main`.
-
-## A word about prompts
-
-Once M9 (`context`) is done, keep the Context field of each real task up to date as you work. By the end of the hackathon you should have a handful of curated context blocks on real tasks — those become part of your Module 5 "Vibe Coding History" deliverable. Free credit, just by using your own tool.
-
----
-
-*UXD Vibecoding Hackathon 2026 · Prof. Dr. Ignacio Alvarez*
