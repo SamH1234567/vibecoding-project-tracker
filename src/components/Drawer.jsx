@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { TriangleAlert, X } from 'lucide-react';
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -60,7 +60,7 @@ export default function Drawer({ title, onClose, onSubmit, footer, children }) {
               aria-label="Close"
               className="rounded-full p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
-              <X size={18} />
+              <X size={18} aria-hidden="true" />
             </button>
           </header>
 
@@ -74,7 +74,7 @@ export default function Drawer({ title, onClose, onSubmit, footer, children }) {
 }
 
 export const inputClass =
-  'w-full rounded-lg border border-slate-300 bg-surface-card px-3 py-2 text-sm text-text-primary focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/30';
+  'w-full rounded-lg border border-line-control bg-surface-card px-3 py-2 text-sm text-text-primary placeholder:text-slate-500 focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/30 aria-[invalid=true]:border-due-overdue';
 
 export const primaryButtonClass =
   'rounded-full bg-brand-primary px-5 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50';
@@ -82,13 +82,29 @@ export const primaryButtonClass =
 export const secondaryButtonClass =
   'rounded-full border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary';
 
-export function Field({ label, htmlFor, children }) {
+export function Field({ label, htmlFor, required, children }) {
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={htmlFor} className="text-xs font-medium text-text-muted">
         {label}
+        {required && <span className="font-normal"> (required)</span>}
       </label>
       {children}
     </div>
+  );
+}
+
+// Form error in a drawer footer. The live region is always rendered so screen
+// readers announce the message when it appears (WCAG 3.3.1, 4.1.3).
+export function FormError({ message }) {
+  return (
+    <p aria-live="polite" className="flex items-center gap-1 text-xs text-text-primary">
+      {message && (
+        <>
+          <TriangleAlert size={13} className="shrink-0 text-due-overdue" aria-hidden="true" />
+          {message}
+        </>
+      )}
+    </p>
   );
 }

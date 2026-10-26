@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { isDone } from '../lib/board';
-import { BookOpen, ExternalLink, FileText, MonitorPlay, Presentation } from 'lucide-react';
+import { BookOpen, ExternalLink, FileText, MonitorPlay, Presentation, TriangleAlert } from 'lucide-react';
 
 const ICONS = {
   presentation: Presentation,
@@ -50,7 +50,7 @@ function AnchorCard({ anchor, linked, onSave, onShowTasks }) {
         </label>
         <span className="ml-auto flex items-center gap-1.5 text-xs text-text-muted">
           <span
-            className={`h-2 w-2 rounded-full ${filled ? 'bg-brand-primary' : 'ring-1 ring-inset ring-slate-400'}`}
+            className={`h-2 w-2 rounded-full ${filled ? 'bg-brand-primary' : 'ring-1 ring-inset ring-slate-500'}`}
             aria-hidden="true"
           />
           {filled ? 'Linked' : 'No link yet'}
@@ -66,11 +66,11 @@ function AnchorCard({ anchor, linked, onSave, onShowTasks }) {
           onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
           placeholder="Paste a link"
           aria-invalid={invalid}
-          aria-describedby={invalid ? `${inputId}-error` : undefined}
-          className={`min-w-0 flex-1 rounded-lg border bg-surface-card px-2.5 py-1.5 font-mono text-xs text-text-primary focus:outline-none focus:ring-2 ${
+          aria-describedby={`${inputId}-error`}
+          className={`min-w-0 flex-1 rounded-lg border bg-surface-card px-2.5 py-1.5 font-mono text-xs text-text-primary placeholder:text-slate-500 focus:outline-none focus:ring-2 ${
             invalid
-              ? 'border-slate-500 focus:ring-slate-400/40'
-              : 'border-slate-200 focus:border-brand-primary focus:ring-brand-primary/30'
+              ? 'border-due-overdue focus:ring-due-overdue/30'
+              : 'border-line-control focus:border-brand-primary focus:ring-brand-primary/30'
           }`}
         />
         {filled && (
@@ -87,23 +87,28 @@ function AnchorCard({ anchor, linked, onSave, onShowTasks }) {
         )}
       </div>
       {linked.total === 0 ? (
-        <p className="text-[11px] text-text-muted">No tasks linked</p>
+        <p className="text-xs text-text-muted">No tasks linked</p>
       ) : (
-        // Filters the board to this deliverable's tasks.
+        // Filters the board to this deliverable's tasks. The visible text starts
+        // the accessible name (WCAG 2.5.3); the rest is for screen readers only.
         <button
           type="button"
           onClick={() => onShowTasks(anchor.id)}
-          aria-label={`Show the ${linked.total} task${linked.total === 1 ? '' : 's'} linked to ${anchor.label}`}
-          className="self-start rounded-full text-[11px] text-text-muted underline decoration-dotted underline-offset-2 hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="-ml-1 min-h-[1.5rem] self-start rounded-full px-1 text-xs text-text-muted underline decoration-dotted underline-offset-2 hover:text-brand-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           {linked.total} task{linked.total === 1 ? '' : 's'} linked · {linked.open} open
+          <span className="sr-only">. Show them on the board.</span>
         </button>
       )}
-      {invalid && (
-        <p id={`${inputId}-error`} className="text-xs text-text-muted">
-          That doesn't look like a web link.
-        </p>
-      )}
+      {/* Always rendered so the error is announced when it appears. */}
+      <p id={`${inputId}-error`} aria-live="polite" className="flex items-center gap-1 text-xs text-text-primary">
+        {invalid && (
+          <>
+            <TriangleAlert size={13} className="shrink-0 text-due-overdue" aria-hidden="true" />
+            That doesn't look like a web link. Try one starting with https://
+          </>
+        )}
+      </p>
     </div>
   );
 }
@@ -116,7 +121,7 @@ export default function AnchorBoard({ anchors, tasks, board, onSave, onShowTasks
     return { total: linked.length, open: linked.filter((t) => !isDone(t, board)).length };
   };
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {anchors.map((anchor) => (
         <AnchorCard key={`${anchor.id}:${anchor.url ?? ''}`} anchor={anchor} linked={linkedTo(anchor.id)} onSave={onSave} onShowTasks={onShowTasks} />
       ))}
@@ -134,7 +139,7 @@ export function AnchorSummary({ anchors }) {
           <span
             key={a.id}
             title={a.label}
-            className={`h-2 w-2 rounded-full ${a.url ? 'bg-brand-primary' : 'ring-1 ring-inset ring-slate-400'}`}
+            className={`h-2 w-2 rounded-full ${a.url ? 'bg-brand-primary' : 'ring-1 ring-inset ring-slate-500'}`}
           />
         ))}
       </span>

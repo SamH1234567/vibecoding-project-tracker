@@ -31,22 +31,23 @@ export default function SubtaskList({ subtasks, onChange }) {
       {subtasks.length > 0 && (
         <ul className="flex flex-col gap-1">
           {subtasks.map((s) => (
-            <li key={s.id} className="group flex items-center gap-2 rounded-lg px-1 py-0.5 hover:bg-slate-50">
-              <input
-                type="checkbox"
-                id={`subtask-${s.id}`}
-                checked={s.done}
-                onChange={() => toggle(s.id)}
-                className="h-4 w-4 rounded border-slate-300 accent-brand-primary"
-              />
-              <label htmlFor={`subtask-${s.id}`} className={`flex-1 text-sm ${s.done ? 'text-text-muted line-through' : ''}`}>
+            <li key={s.id} className="flex items-center gap-2 rounded-lg px-1 hover:bg-slate-50">
+              {/* The whole row is the checkbox's label, so the target is easy to hit (WCAG 2.5.8). */}
+              <label className={`flex min-h-[2rem] flex-1 cursor-pointer items-center gap-2 text-sm ${s.done ? 'text-text-muted line-through' : ''}`}>
+                <input
+                  type="checkbox"
+                  checked={s.done}
+                  onChange={() => toggle(s.id)}
+                  className="h-4 w-4 shrink-0 rounded border-line-control accent-brand-primary"
+                />
                 {s.title}
               </label>
+              {/* Always visible, not only on hover, so touch and magnifier users can find it. */}
               <button
                 type="button"
                 onClick={() => remove(s.id)}
                 aria-label={`Remove "${s.title}"`}
-                className="rounded-full p-1 text-text-muted opacity-0 hover:bg-slate-100 hover:text-text-primary focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary group-hover:opacity-100"
+                className="rounded-full p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               >
                 <X size={13} aria-hidden="true" />
               </button>
@@ -75,7 +76,7 @@ export default function SubtaskList({ subtasks, onChange }) {
           onClick={add}
           disabled={!text.trim()}
           aria-label="Add sub-requirement"
-          className="shrink-0 rounded-full border border-slate-300 p-2 text-text-muted hover:bg-slate-50 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:opacity-40"
+          className="shrink-0 rounded-full border border-line-control p-2 text-text-muted hover:bg-slate-50 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:opacity-40"
         >
           <Plus size={15} aria-hidden="true" />
         </button>

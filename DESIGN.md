@@ -38,13 +38,14 @@ These are the colors the build milestones will reference. Once chosen, paste the
 | `surface-page` | `#F8FAFC` | Page background |
 | `surface-card` | `#FFFFFF` | Card background |
 | `text-primary` | `#0F172A` | Body text |
-| `text-muted` | `#64748B` | Captions, dates, counts |
+| `text-muted` | `#475569` | Captions, dates, counts (darkened from #64748B for 4.5:1 contrast on grey columns) |
+| `line-control` | `#7B8799` | Borders of text inputs and selects (3:1 against white) |
 
 ### Task type (M6 `tag-style`)
 
 | Token | Hex | When used |
 |---|---|---|
-| `type-feature` | `#3B82F6` | Cards tagged `feature` (accent stripe + Lucide `Sparkles` icon) |
+| `type-feature` | `#2563EB` | Cards tagged `feature` (accent stripe + Lucide `Sparkles` icon) |
 | `type-bug` | `#9333EA` | Cards tagged `bug` (accent stripe + Lucide `Bug` icon) |
 
 Type colours are deliberately cool hues (blue / purple) so that every warm colour on the board means a due-date state. A purple bug stripe can never be mistaken for an overdue alert.
@@ -53,8 +54,8 @@ Type colours are deliberately cool hues (blue / purple) so that every warm colou
 
 | Token | Hex | When used |
 |---|---|---|
-| `due-safe` | `#10B981` | More than 2 days out |
-| `due-warning` | `#F59E0B` | Due today or within the next 2 days (covers both the brief's <24 h case and the unspecified 1–2 day gap) |
+| `due-safe` | `#047857` | More than 2 days out |
+| `due-warning` | `#B45309` | Due today or within the next 2 days (covers both the brief's <24 h case and the unspecified 1–2 day gap) |
 | `due-overdue` | `#DC2626` | Past due |
 | `due-neutral` | `#94A3B8` | Done (overrides date) |
 

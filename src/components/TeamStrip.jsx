@@ -72,7 +72,7 @@ function MemberPill({ board, member, owned, isOpen, onToggle, onClose, onOpenTas
       {isOpen && (
         <div
           id={listId}
-          className="absolute left-0 top-full z-30 mt-2 w-72 rounded-xl bg-surface-card p-3 shadow-lg ring-1 ring-slate-200"
+          className="absolute left-0 top-full z-30 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl bg-surface-card p-3 shadow-lg ring-1 ring-slate-200"
         >
           {owned.length === 0 ? (
             <p className="px-1 py-2 text-sm text-text-muted">No open tasks.</p>
@@ -82,7 +82,7 @@ function MemberPill({ board, member, owned, isOpen, onToggle, onClose, onOpenTas
               if (groupTasks.length === 0) return null;
               return (
                 <div key={group.id} className="mb-2 last:mb-0">
-                  <h3 className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
+                  <h3 className="px-1 pb-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
                     {group.label}
                   </h3>
                   <ul>
@@ -147,7 +147,11 @@ export function TeamSummary({ board, team, tasks }) {
         return (
           <span key={member.id} className="flex items-center gap-1" title={`${member.name}: ${driving} in progress`}>
             <Avatar name={member.name} />
-            {driving > 0 && <span className="font-mono">{driving}</span>}
+            {driving > 0 && <span className="font-mono" aria-hidden="true">{driving}</span>}
+            {/* Avatars are hidden from screen readers, so say who and how many. */}
+            <span className="sr-only">
+              {member.name}: {driving} in progress.
+            </span>
           </span>
         );
       })}

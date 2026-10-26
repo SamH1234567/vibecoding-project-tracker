@@ -29,7 +29,7 @@ export default function DueChip({ task, done }) {
   return (
     <span
       title={`Due ${formatShortDate(task.dueDate)}`}
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset ${style.chip} ${
+      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${style.chip} ${
         state === 'neutral' ? 'text-text-muted' : 'text-text-primary'
       }`}
     >

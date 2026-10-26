@@ -7,9 +7,12 @@ export default {
       colors: {
         brand: { primary: '#4F46E5', accent: '#0EA5E9' },
         surface: { page: '#F8FAFC', card: '#FFFFFF' },
-        text: { primary: '#0F172A', muted: '#64748B' },
-        type: { feature: '#3B82F6', bug: '#9333EA' },
-        due: { safe: '#10B981', warning: '#F59E0B', overdue: '#DC2626', neutral: '#94A3B8' },
+        // Darkened for WCAG 2.2 AA contrast (see ACCESSIBILITY.md).
+        text: { primary: '#0F172A', muted: '#475569' },
+        type: { feature: '#2563EB', bug: '#9333EA' },
+        due: { safe: '#047857', warning: '#B45309', overdue: '#DC2626', neutral: '#94A3B8' },
+        // Borders of text inputs and selects: at least 3:1 against white (WCAG 1.4.11).
+        line: { control: '#7B8799' },
       },
       // DESIGN.md §3
       fontFamily: {

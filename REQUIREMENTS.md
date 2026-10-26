@@ -37,7 +37,7 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | Drawer is an accessible modal (focus trap, Esc, focus return) | M5 `crud-modal` | `src/components/Drawer.jsx` | |
 | Feature / bug colour stripe + corner icon, shared everywhere | M6 `tag-style` | `src/components/taskTypes.js` | |
 | Initials avatar on each card | M7 `task-owner` | `src/components/Avatar.jsx`, `TaskCard.jsx` | |
-| "Hand off to…" dropdown on each card | M7 `task-owner` | `src/components/TaskCard.jsx` | |
+| "Hand off to…" menu on each card (a dropdown until the accessibility pass) | M7 `task-owner` | `src/components/TaskCard.jsx` | |
 | "Handed off to {name}." confirmation toast | M7 `task-owner` | `src/components/Toast.jsx` | |
 | "Who's driving what" team strip | M7 `task-owner` | `src/components/TeamStrip.jsx` | |
 | Click a member to see their open tasks (Doing / Reviewing / Up next) | M7 `task-owner` | `src/components/TeamStrip.jsx` | |
@@ -48,7 +48,7 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | "Last updated … ago" hint; contextUpdatedAt set automatically on save | M9 `task-context` | `ContextField.jsx`, `TaskDrawer.jsx`, `src/lib/dates.js` | |
 | New tasks pre-filled with Background / Constraints / Tried so far / Pick up template | M9 `task-context` | `src/seed.js`, `src/lib/store.js` | |
 | Write / Preview toggle with rendered Markdown | M9 `task-context` | `ContextField.jsx` (react-markdown) | |
-| "Copy context" button on every card and in the task drawer | M10 `copy-context` | `TaskCard.jsx`, `TaskDrawer.jsx`, `App.jsx` | |
+| "Copy context" button on every card (labelled since the accessibility pass) and in the task drawer | M10 `copy-context` | `TaskCard.jsx`, `TaskDrawer.jsx`, `App.jsx` | |
 | Markdown briefing: title, description, type/status/owner/due/tool, filled context sections, outcome | M10 `copy-context` | `src/lib/briefing.js` | |
 | "Context copied, ready to paste." toast (error toast if the clipboard is blocked) | M10 `copy-context` | `src/components/Toast.jsx`, `App.jsx` | |
 | Pinned deliverables above the board: Presentation / Demo / Report / Documentation | M11 `project-deliverables` | `src/components/AnchorBoard.jsx` | |
@@ -68,3 +68,4 @@ Every requirement has a unique ID. **MVP** marks the minimum viable product; eve
 | Link tasks to deliverables; deliverable cards show linked / open task counts | Post-hackathon | `TaskDrawer.jsx`, `AnchorBoard.jsx` | |
 | "Who are you?" sign-in (prototype, no passwords) with "Continue as demo user"; Switch user; "My tasks" filter; activity log records who did what | Post-hackathon | `src/components/SignIn.jsx`, `App.jsx`, `FilterBar.jsx`, `src/lib/store.js` | |
 | See tasks linked to a deliverable: click the count on its card, or the Deliverable filter; cards show a link label | Post-hackathon | `AnchorBoard.jsx`, `FilterBar.jsx`, `src/lib/filters.js`, `TaskCard.jsx` | |
+| Accessibility pass to WCAG 2.2 AA: contrast tokens, input borders, skip link, reflow to one column on narrow screens, 24 px targets, live regions for errors and filter counts, `aria-invalid` on bad fields, toast pause on hover, reduced-motion support (details in ACCESSIBILITY.md) | Post-hackathon | `tailwind.config.js`, `src/index.css`, all components, `ACCESSIBILITY.md` | |

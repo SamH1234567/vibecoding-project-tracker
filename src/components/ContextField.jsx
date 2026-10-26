@@ -6,16 +6,23 @@ import { Field, inputClass } from './Drawer';
 
 // Styles for the rendered preview (no typography plugin, so set per element).
 // react-markdown never renders raw HTML, so pasted prompts can't inject markup.
+// Headings sit below the drawer's h2 and the section's h3, so the outline stays in order (WCAG 1.3.1).
 const markdownComponents = {
-  h1: (props) => <h3 className="mb-1 mt-3 text-sm font-semibold first:mt-0" {...props} />,
-  h2: (props) => <h4 className="mb-1 mt-3 text-xs font-semibold uppercase tracking-wide text-text-muted first:mt-0" {...props} />,
-  h3: (props) => <h5 className="mb-1 mt-2 text-sm font-medium first:mt-0" {...props} />,
+  h1: (props) => <h4 className="mb-1 mt-3 text-sm font-semibold first:mt-0" {...props} />,
+  h2: (props) => <h5 className="mb-1 mt-3 text-xs font-semibold uppercase tracking-wide text-text-muted first:mt-0" {...props} />,
+  h3: (props) => <h6 className="mb-1 mt-2 text-sm font-medium first:mt-0" {...props} />,
   p: (props) => <p className="mb-2 last:mb-0" {...props} />,
   ul: (props) => <ul className="mb-2 list-disc pl-5" {...props} />,
   ol: (props) => <ol className="mb-2 list-decimal pl-5" {...props} />,
   code: (props) => <code className="rounded bg-slate-100 px-1 font-mono text-xs" {...props} />,
   pre: (props) => <pre className="mb-2 overflow-x-auto rounded-lg bg-slate-100 p-3 font-mono text-xs [&_code]:bg-transparent [&_code]:p-0" {...props} />,
-  a: (props) => <a className="text-brand-primary underline" target="_blank" rel="noreferrer" {...props} />,
+  // eslint-disable-next-line no-unused-vars
+  a: ({ node, children, ...props }) => (
+    <a className="text-brand-primary underline" target="_blank" rel="noreferrer" {...props}>
+      {children}
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
+  ),
 };
 
 const tabClass = (active) =>

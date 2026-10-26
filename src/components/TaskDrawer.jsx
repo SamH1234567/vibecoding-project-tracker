@@ -63,8 +63,19 @@ export default function TaskDrawer({ task, isNew, board, team, onSave, onDelete,
 
   return (
     <Drawer title={isNew ? 'New task' : 'Edit task'} onClose={onClose} onSubmit={handleSubmit} footer={footer}>
-      <Field label="Title" htmlFor="task-title">
-        <input id="task-title" value={draft.title} onChange={set('title')} required className={inputClass} />
+      <Field label="Title" htmlFor="task-title" required>
+        <input
+          id="task-title"
+          value={draft.title}
+          onChange={set('title')}
+          required
+          aria-describedby="task-title-hint"
+          className={inputClass}
+        />
+        {/* Says why Save is unavailable instead of only disabling it (WCAG 3.3.2). */}
+        <p id="task-title-hint" className="text-xs text-text-muted">
+          {canSave ? '' : 'Add a title to save the task.'}
+        </p>
       </Field>
 
       <Field label="Description" htmlFor="task-description">
@@ -77,7 +88,7 @@ export default function TaskDrawer({ task, isNew, board, team, onSave, onDelete,
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <fieldset className="flex flex-col gap-1">
           <legend className="mb-1 text-xs font-medium text-text-muted">Type</legend>
           <div className="flex gap-2">
@@ -85,7 +96,7 @@ export default function TaskDrawer({ task, isNew, board, team, onSave, onDelete,
               <label
                 key={value}
                 className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-primary ${
-                  draft.type === value ? type.selected : 'border-slate-300 text-text-muted hover:bg-slate-50'
+                  draft.type === value ? type.selected : 'border-line-control text-text-muted hover:bg-slate-50'
                 }`}
               >
                 <input

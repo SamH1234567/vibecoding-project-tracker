@@ -14,7 +14,7 @@ function StatTile({ label, value, hint, alert }) {
         {label}
       </div>
       <div className="mt-1 text-2xl font-semibold tabular-nums">{value}</div>
-      {hint && <div className="text-[11px] text-text-muted">{hint}</div>}
+      {hint && <div className="text-xs text-text-muted">{hint}</div>}
     </div>
   );
 }
@@ -56,11 +56,11 @@ function CompletionChart({ data }) {
   const total = data.reduce((a, d) => a + d.count, 0);
   return (
     <figure>
-      <div className="flex h-24 items-end gap-0.5 border-b border-slate-300" role="img" aria-label={`${total} tasks completed in the last 14 days`}>
+      <div className="flex h-24 items-end gap-0.5 border-b border-slate-300" aria-hidden="true">
         {data.map((d) => (
           <div key={d.date} className="group flex h-full flex-1 flex-col justify-end" title={`${formatShortDate(d.date)}: ${d.count} done`}>
             {d.count === max && d.count > 0 && (
-              <span className="mb-0.5 text-center font-mono text-[10px] text-text-muted">{d.count}</span>
+              <span className="mb-0.5 text-center font-mono text-xs text-text-muted">{d.count}</span>
             )}
             <div
               className="rounded-t bg-brand-primary group-hover:bg-brand-primary/80"
@@ -69,10 +69,19 @@ function CompletionChart({ data }) {
           </div>
         ))}
       </div>
-      <figcaption className="mt-1 flex justify-between text-[10px] text-text-muted">
+      <figcaption className="mt-1 flex justify-between text-xs text-text-muted">
         <span>{formatShortDate(data[0].date)}</span>
         <span>Today</span>
+        <span className="sr-only">{total} tasks completed in the last 14 days.</span>
       </figcaption>
+      {/* The same numbers as text, since the bars are visual only (WCAG 1.1.1). */}
+      <ul className="sr-only">
+        {data.map((d) => (
+          <li key={d.date}>
+            {formatShortDate(d.date)}: {d.count} done
+          </li>
+        ))}
+      </ul>
     </figure>
   );
 }

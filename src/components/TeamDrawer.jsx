@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import Avatar from './Avatar';
-import Drawer, { Field, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
+import Drawer, { Field, FormError, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
 
 // Edit team members: name, email and GitHub account (client requirement).
 export default function TeamDrawer({ team, tasks, onSave, onClose }) {
@@ -23,6 +23,11 @@ export default function TeamDrawer({ team, tasks, onSave, onClose }) {
   const hasBlank = names.some((n) => n === '');
   const hasDuplicate = new Set(names.map((n) => n.toLowerCase())).size !== names.length;
   const error = hasBlank ? 'Every member needs a name.' : hasDuplicate ? 'Names must be different.' : null;
+  // Which name fields to mark as invalid (WCAG 3.3.1).
+  const nameInvalid = (member) => {
+    const n = member.name.trim().toLowerCase();
+    return n === '' || names.filter((x) => x.toLowerCase() === n).length > 1;
+  };
 
   function handleSubmit() {
     if (!error) onSave(draft.map((m) => ({ ...m, name: m.name.trim(), email: m.email.trim(), github: m.github.trim() })));
@@ -30,7 +35,7 @@ export default function TeamDrawer({ team, tasks, onSave, onClose }) {
 
   const footer = (
     <>
-      {error && <p className="text-xs text-text-muted">{error}</p>}
+      <FormError message={error} />
       <div className="ml-auto flex gap-2">
         <button type="button" onClick={onClose} className={secondaryButtonClass}>
           Cancel
@@ -54,9 +59,16 @@ export default function TeamDrawer({ team, tasks, onSave, onClose }) {
             </legend>
             <div className="flex flex-col gap-3">
               <Field label="Name" htmlFor={`name-${member.id}`}>
-                <input id={`name-${member.id}`} value={member.name} onChange={update(member.id, 'name')} className={inputClass} />
+                <input
+                  id={`name-${member.id}`}
+                  value={member.name}
+                  onChange={update(member.id, 'name')}
+                  aria-invalid={nameInvalid(member)}
+                  autoComplete="off"
+                  className={inputClass}
+                />
               </Field>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Email" htmlFor={`email-${member.id}`}>
                   <input
                     id={`email-${member.id}`}
@@ -76,13 +88,14 @@ export default function TeamDrawer({ team, tasks, onSave, onClose }) {
                 </Field>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-muted">
+                <span id={`owned-${member.id}`} className="text-xs text-text-muted">
                   {owned > 0 ? `Owns ${owned} task${owned === 1 ? '' : 's'}. Hand them off before removing.` : ''}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeMember(member.id)}
                   disabled={owned > 0 || draft.length === 1}
+                  aria-describedby={owned > 0 ? `owned-${member.id}` : undefined}
                   className="flex items-center gap-1 rounded-full px-3 py-1 text-xs text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
                 >
                   <Trash2 size={13} aria-hidden="true" />

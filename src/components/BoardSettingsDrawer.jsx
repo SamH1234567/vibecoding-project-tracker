@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
-import Drawer, { Field, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
+import Drawer, { Field, FormError, inputClass, primaryButtonClass, secondaryButtonClass } from './Drawer';
 
 const iconButton =
   'rounded-full p-1.5 text-text-muted hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent';
@@ -60,7 +60,7 @@ export default function BoardSettingsDrawer({ board, tasks, canDelete, onSave, o
           Delete board
         </button>
       )}
-      {error && <p className="text-xs text-text-muted">{error}</p>}
+      <FormError message={error} />
       <div className="ml-auto flex gap-2">
         <button type="button" onClick={onClose} className={secondaryButtonClass}>
           Cancel
@@ -75,7 +75,13 @@ export default function BoardSettingsDrawer({ board, tasks, canDelete, onSave, o
   return (
     <Drawer title="Board settings" onClose={onClose} onSubmit={handleSubmit} footer={footer}>
       <Field label="Board name" htmlFor="board-name">
-        <input id="board-name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+        <input
+          id="board-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          aria-invalid={!name.trim()}
+          className={inputClass}
+        />
       </Field>
 
       <fieldset className="flex flex-col gap-2">
@@ -92,9 +98,10 @@ export default function BoardSettingsDrawer({ board, tasks, canDelete, onSave, o
                 value={column.label}
                 onChange={(e) => renameColumn(column.id, e.target.value)}
                 aria-label={`Column ${index + 1} name`}
+                aria-invalid={!column.label.trim()}
                 className={inputClass}
               />
-              <span className="w-16 shrink-0 text-center text-[11px] text-text-muted">
+              <span className="w-16 shrink-0 text-center text-xs text-text-muted">
                 {isLast ? 'Done' : `${count} task${count === 1 ? '' : 's'}`}
               </span>
               <button type="button" onClick={() => moveColumn(index, -1)} disabled={index === 0} aria-label={`Move ${column.label || "column"} earlier`} className={iconButton}>
@@ -126,19 +133,21 @@ export default function BoardSettingsDrawer({ board, tasks, canDelete, onSave, o
         <legend className="mb-1 text-xs font-medium text-text-muted">Milestones</legend>
         <p className="text-xs text-text-muted">Tasks can be added to a milestone; Insights shows its burndown.</p>
         {milestones.map((m, index) => (
-          <div key={m.id} className="flex items-center gap-2">
+          <div key={m.id} className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
             <input
               value={m.name}
               onChange={(e) => updateMilestone(m.id, 'name', e.target.value)}
               aria-label={`Milestone ${index + 1} name`}
+              aria-invalid={!m.name.trim()}
               placeholder="Name"
-              className={inputClass}
+              className={`${inputClass} min-w-0 flex-1`}
             />
             <input
               type="date"
               value={m.dueDate}
               onChange={(e) => updateMilestone(m.id, 'dueDate', e.target.value)}
               aria-label={`Milestone ${index + 1} due date`}
+              aria-invalid={!m.dueDate}
               className={`${inputClass} w-40 shrink-0`}
             />
             <button

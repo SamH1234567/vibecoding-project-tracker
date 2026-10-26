@@ -33,7 +33,14 @@ export default function Board({ board, tasks, team, isVisible, onOpenTask, onAdd
   }
 
   return (
-    <main className="grid gap-4" style={{ gridTemplateColumns: `repeat(${board.columns.length}, minmax(0, 1fr))` }}>
+    // Columns stack on narrow screens so nothing scrolls sideways (WCAG 1.4.10).
+    <main
+      id="board"
+      tabIndex={-1}
+      aria-label="Board"
+      className="grid grid-cols-1 gap-4 focus:outline-none md:[grid-template-columns:var(--board-cols)]"
+      style={{ '--board-cols': `repeat(${board.columns.length}, minmax(0, 1fr))` }}
+    >
       {board.columns.map((stage, index) => {
         const isDoneColumn = index === board.columns.length - 1;
         const stageTasks = tasks.filter((t) => t.status === stage.id);
@@ -43,6 +50,7 @@ export default function Board({ board, tasks, team, isVisible, onOpenTask, onAdd
         return (
           <section
             key={stage.id}
+            aria-labelledby={`column-${stage.id}`}
             onDragOver={(e) => handleDragOver(e, stage.id)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, stage.id)}
@@ -50,10 +58,18 @@ export default function Board({ board, tasks, team, isVisible, onOpenTask, onAdd
               isTarget ? 'bg-brand-primary/5 ring-2 ring-inset ring-brand-primary/40' : 'bg-slate-100/70'
             }`}
           >
-            <h2 className="flex items-center justify-between px-1 text-xs font-semibold uppercase tracking-wide text-text-muted">
+            <h2
+              id={`column-${stage.id}`}
+              className="flex items-center justify-between px-1 text-xs font-semibold uppercase tracking-wide text-text-muted"
+            >
               {stage.label}
-              <span className="font-mono" aria-label={filtered ? `${shownTasks.length} of ${stageTasks.length} shown` : undefined}>
-                {filtered ? `${shownTasks.length}/${stageTasks.length}` : stageTasks.length}
+              <span className="font-mono">
+                <span aria-hidden="true">{filtered ? `${shownTasks.length}/${stageTasks.length}` : stageTasks.length}</span>
+                <span className="sr-only">
+                  {filtered
+                    ? `, ${shownTasks.length} of ${stageTasks.length} tasks shown`
+                    : `, ${stageTasks.length} task${stageTasks.length === 1 ? '' : 's'}`}
+                </span>
               </span>
             </h2>
             {stageTasks.length > 0 && shownTasks.length === 0 ? (

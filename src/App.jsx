@@ -167,15 +167,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-page p-6 font-sans text-text-primary">
-      <header className="mb-4 flex items-end justify-between">
+    <div className="min-h-screen bg-surface-page p-4 font-sans text-text-primary sm:p-6">
+      {/* Skip link (WCAG 2.4.1): jumps past the header, deliverables, team and filters. */}
+      <a
+        href="#board"
+        className="sr-only rounded-full bg-brand-primary px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
+      >
+        Skip to board
+      </a>
+      <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-brand-primary">Sprint</h1>
           <p className="text-sm text-text-muted">
             Pick up any task right where the last person — or AI — left off.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button type="button" onClick={() => setShowInsights(true)} className={headerButton}>
             <ChartColumn size={15} aria-hidden="true" />
             Insights
@@ -200,7 +207,7 @@ export default function App() {
           value={board.id}
           onChange={(e) => handleSwitchBoard(e.target.value)}
           aria-label="Board"
-          className="rounded-full border border-slate-300 bg-surface-card py-1.5 pl-3 pr-8 text-sm font-medium focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+          className="rounded-full border border-line-control bg-surface-card py-1.5 pl-3 pr-8 text-sm font-medium focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
         >
           {boards.map((b) => (
             <option key={b.id} value={b.id}>
@@ -217,7 +224,7 @@ export default function App() {
           New board
         </button>
 
-        <div className="ml-auto flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm sm:ml-auto">
           <Avatar name={me.name} />
           <span>{me.name}</span>
           <button type="button" onClick={signOut} className={quietButton}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatShortDate, todayISO } from '../lib/dates';
 
 const W = 440;
@@ -32,23 +32,31 @@ export default function BurndownChart({ data }) {
   const lastActual = points.reduce((last, p, i) => (p.remaining == null ? last : i), 0);
   const hovered = hover == null ? null : points[hover];
 
+  // Esc dismisses the hover tooltip without moving the pointer (WCAG 1.4.13).
+  useEffect(() => {
+    if (hover == null) return undefined;
+    const handleKey = (e) => e.key === 'Escape' && setHover(null);
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [hover]);
+
   return (
     <figure className="flex flex-col gap-2">
-      <div className="flex items-center justify-between text-[11px] text-text-muted">
+      <div className="flex items-center justify-between text-xs text-text-muted">
         <span className="flex items-center gap-3">
           <span className="flex items-center gap-1.5">
             <span className="h-0.5 w-4 rounded bg-brand-primary" aria-hidden="true" />
             Remaining points
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />
+            <span className="w-4 border-t-2 border-dashed border-slate-500" aria-hidden="true" />
             Ideal
           </span>
         </span>
         <button
           type="button"
           onClick={() => setAsTable(!asTable)}
-          className="rounded-full px-2 py-0.5 hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+          className="min-h-[1.5rem] rounded-full px-2 py-1 hover:bg-slate-100 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         >
           {asTable ? 'Show chart' : 'Show table'}
         </button>
@@ -101,7 +109,7 @@ export default function BurndownChart({ data }) {
               {formatShortDate(points[0].date)}
             </text>
 
-            <path d={path('ideal')} fill="none" className="stroke-slate-400" strokeWidth="2" strokeDasharray="4 4" />
+            <path d={path('ideal')} fill="none" className="stroke-slate-500" strokeWidth="2" strokeDasharray="4 4" />
             <path d={path('remaining')} fill="none" className="stroke-brand-primary" strokeWidth="2" strokeLinejoin="round" />
 
             {/* Direct label at the end of the actual line. */}
@@ -134,7 +142,7 @@ export default function BurndownChart({ data }) {
 
           {hovered && (
             <div
-              className="pointer-events-none absolute top-0 rounded-lg bg-text-primary px-2 py-1 text-[11px] text-white shadow"
+              className="pointer-events-none absolute top-0 rounded-lg bg-text-primary px-2 py-1 text-xs text-white shadow"
               style={{ left: `${(x(hover) / W) * 100}%`, transform: `translateX(${hover > n / 2 ? '-105%' : '5%'})` }}
             >
               <div className="font-medium">
@@ -148,7 +156,7 @@ export default function BurndownChart({ data }) {
         </div>
       )}
       {dueDate < today && (
-        <figcaption className="text-[11px] text-text-muted">This milestone's due date has passed.</figcaption>
+        <figcaption className="text-xs text-text-muted">This milestone's due date has passed.</figcaption>
       )}
     </figure>
   );
