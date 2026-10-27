@@ -39,7 +39,9 @@ function HandOffMenu({ task, others, onHandOff }) {
   }
 
   return (
-    <div ref={wrapperRef} className="relative z-10 min-w-0">
+    // Raised while open: the wrapper's z-index is its own stacking context, so
+    // without this the next card's controls (also z-10, later in the page) draw over the menu.
+    <div ref={wrapperRef} className={`relative min-w-0 ${open ? 'z-30' : 'z-10'}`}>
       <button
         ref={buttonRef}
         type="button"
