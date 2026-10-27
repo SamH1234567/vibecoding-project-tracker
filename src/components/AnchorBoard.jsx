@@ -9,14 +9,21 @@ const ICONS = {
   documentation: BookOpen,
 };
 
+// A hostname made of dot-separated labels ("docs.google.com"), or localhost.
+// The URL parser alone is too lenient: it turns "not a link" into "not%20a%20link".
+const HOSTNAME = /^(localhost|([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9-]{2,})$/i;
+
 // Accepts "example.com/x" as well as full links; returns null if it isn't a web link.
 function normaliseUrl(text) {
   const trimmed = text.trim();
   if (!trimmed) return '';
-  const withScheme = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  if (/\s/.test(trimmed)) return null;
+  // A colon followed by a digit is a port ("localhost:5173"), not a scheme.
+  const withScheme = /^[a-z][a-z0-9+.-]*:(?!\d)/i.test(trimmed) ? trimmed : `https://${trimmed}`;
   try {
     const url = new URL(withScheme);
-    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
+    const isWeb = url.protocol === 'http:' || url.protocol === 'https:';
+    return isWeb && HOSTNAME.test(url.hostname) ? url.href : null;
   } catch {
     return null;
   }
