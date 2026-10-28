@@ -148,7 +148,7 @@ export default function BoardSettingsDrawer({ board, tasks, canDelete, onSave, o
               onChange={(e) => updateMilestone(m.id, 'dueDate', e.target.value)}
               aria-label={`Milestone ${index + 1} due date`}
               aria-invalid={!m.dueDate}
-              className={`${inputClass} w-40 shrink-0`}
+              className={`${inputClass} shrink-0 sm:w-40`}
             />
             <button
               type="button"
